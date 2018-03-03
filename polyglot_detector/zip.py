@@ -1,5 +1,4 @@
 import mmap
-import struct
 from .polyglot_level import PolyglotLevel
 
 MAGIC = b'PK'

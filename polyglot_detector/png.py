@@ -1,7 +1,7 @@
 import struct
 from .polyglot_level import PolyglotLevel
 
-
+MAGIC = b'\x89PNG\r\n\x1a\n'
 SECTION_HEADING_SIZE = 8
 CRC_SIZE = 4
 IEND = 'IEND'
@@ -9,10 +9,9 @@ SEEK_CUR = 1
 
 
 def check(filename: str):
-    magic = b'\x89PNG\r\n\x1a\n'
 
     with open(filename, 'rb') as file:
-        if magic != file.read(len(magic)):
+        if file.read(len(MAGIC)) != MAGIC:
             return None
         try:
             name = ''

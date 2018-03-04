@@ -1,5 +1,5 @@
 import mmap
-from .polyglot_level import PolyglotLevel
+from polyglot_detector.polyglot_level import PolyglotLevel
 
 
 # TODO Check if the magic is within the first 1024 bytes to declare VALID ?

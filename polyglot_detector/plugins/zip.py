@@ -1,5 +1,5 @@
 import mmap
-from .polyglot_level import PolyglotLevel
+from polyglot_detector.polyglot_level import PolyglotLevel
 
 MAGIC = b'PK'
 EOCD_MIN_SIZE = 22

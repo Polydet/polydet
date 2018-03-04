@@ -1,5 +1,7 @@
-from polyglot_detector import PolyglotLevel, png
 from unittest import TestCase
+
+from polyglot_detector import PolyglotLevel
+from polyglot_detector.plugins import png
 
 
 class TestPNGDetector(TestCase):

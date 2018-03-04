@@ -1,7 +1,7 @@
 import io
 import struct
-from .polyglot_level import PolyglotLevel
-from .utils import must_read
+from polyglot_detector.polyglot_level import PolyglotLevel
+from polyglot_detector.utils import must_read
 
 
 _MAGIC = b'\xFF\xD8'

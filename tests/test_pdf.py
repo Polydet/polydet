@@ -1,5 +1,7 @@
-from polyglot_detector import PolyglotLevel, pdf
 from unittest import TestCase
+
+from polyglot_detector import PolyglotLevel
+from polyglot_detector.plugins import pdf
 
 
 class TestPDFDetector(TestCase):

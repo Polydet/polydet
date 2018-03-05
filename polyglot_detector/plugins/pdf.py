@@ -2,6 +2,8 @@ import mmap
 from polyglot_detector.polyglot_level import PolyglotLevel
 
 
+FILE_EXTENSION = 'PDF'
+
 # TODO Check if the magic is within the first 1024 bytes to declare VALID ?
 def check(filename):
     magic = b"%PDF-"

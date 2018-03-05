@@ -3,6 +3,8 @@ import struct
 from polyglot_detector.polyglot_level import PolyglotLevel
 from polyglot_detector.utils import must_read
 
+FILE_EXTENSION = 'png'
+
 _MAGIC = b'\x89PNG\r\n\x1a\n'
 _CRC_SIZE = 4
 _PNG_SECTION_HEADING_SIZE = 8

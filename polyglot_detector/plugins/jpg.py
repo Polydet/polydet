@@ -4,6 +4,9 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 from polyglot_detector.utils import must_read
 
 
+FILE_EXTENSION = 'jpg'
+
+
 _MAGIC = b'\xFF\xD8'
 _START_OF_SCAN = b'\xFF\xDA'
 _END_MARKER = b'\xFF\xD9'

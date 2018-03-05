@@ -2,7 +2,7 @@ import mmap
 from polyglot_detector.polyglot_level import PolyglotLevel
 
 
-FILE_EXTENSION = 'PDF'
+FILE_EXTENSION = 'pdf'
 
 
 _PDF_EOF = b'\n%%EOF'

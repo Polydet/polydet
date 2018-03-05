@@ -17,3 +17,7 @@ class TestPDFDetector(TestCase):
     def test_magic_anywhere_in_the_file(self):
         self.assertTrue(pdf.check('tests/samples/pdf/lot_of_garbage_at_beginning.pdf')
                         & PolyglotLevel.GARBAGE_AT_BEGINNING)
+
+    def test_garbage_at_end(self):
+        self.assertEqual(pdf.check('tests/samples/pdf/garbage_at_end.pdf'),
+                         PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END)

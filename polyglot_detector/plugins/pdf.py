@@ -5,8 +5,10 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 FILE_EXTENSION = 'PDF'
 
 
+_PDF_EOF = b'\n%%EOF'
+
+
 # TODO Check if the magic is within the first 1024 bytes to declare VALID ?
-# TODO Add garbage_at_end
 def check(filename):
     magic = b"%PDF-"
 
@@ -16,9 +18,17 @@ def check(filename):
                 magic_index = s.find(magic)
                 if magic_index == -1:
                     return None
-                elif magic_index == 0:
-                    return PolyglotLevel.VALID
-                else:
-                    return PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING
+                flag = PolyglotLevel.VALID
+                if magic_index != 0:
+                    flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+                if has_garbage_at_end(s):
+                    flag |= PolyglotLevel.GARBAGE_AT_END
+                return flag
         except ValueError:  # mmap raise ValueError if empty file
             return None
+
+
+def has_garbage_at_end(buffer) -> bool:
+    eof_index = buffer.find(_PDF_EOF)
+    return eof_index != -1 and eof_index + len(_PDF_EOF) + 1 < buffer.size()  # +1 for potential \n
+

@@ -21,6 +21,7 @@ The list below list some readers with different behaviour regarding the validati
 - Evince accepts the PDF if the magic number is anywhere in the file, as long as the file extension is `.pdf`.
 
 For now, this package only search for `%PDF-` anywhere in the file.
+It would be possible to improve this by searching any form of this magic number followed by a line feed `\n`.
 
 ### ZIP
 
@@ -28,5 +29,4 @@ A ZIP file ends with a *End of central directory* record.
 It is a structure between 22 and 65557 long due to the comment at the end.
 However, some program (as *zipinfo*) will try to search for the EOCD even if there is garbage after the EOCD, after the 65535 bytes of comments.
 
-Fow now, this package only search for `PK` with at least 20 bytes after anywhere in the file, but we aim for improvements.
-For example, I plan to look at the source code of *zipinfo* to know how it searches for the EOCD.
+Fow now, this package only search for `PK\x05\x06` with at least 18 bytes after anywhere in the file.

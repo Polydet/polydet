@@ -3,7 +3,8 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 
 FILE_EXTENSION = 'zip'
 
-MAGIC = b'PK'
+_ZIP_EOCD_MAGIC = b'PK\x05\x06'
+_ZIP_LFH_MAGIC = b'PK\x03\x04'
 EOCD_MIN_SIZE = 22
 
 
@@ -13,13 +14,13 @@ def check(filename):
         try:
             with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as s:
                 size = s.size()
-                magic_index = s.rfind(MAGIC, 0, max(0, size - EOCD_MIN_SIZE + len(MAGIC)))
+                magic_index = s.rfind(_ZIP_EOCD_MAGIC, 0, max(0, size - EOCD_MIN_SIZE + len(_ZIP_EOCD_MAGIC)))
                 if magic_index == -1:
                     return None
                 else:
                     size_of_eocd = size - magic_index
                     flag = PolyglotLevel.VALID
-                    if s.find(MAGIC) != 0:
+                    if s.find(_ZIP_LFH_MAGIC) != 0:
                         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                     if size_of_eocd != EOCD_MIN_SIZE:
                         flag |= PolyglotLevel.GARBAGE_AT_END

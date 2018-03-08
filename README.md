@@ -3,9 +3,15 @@
 The purpose of this package is to detect polyglot files.
 It focuses on the common formats that are usually embeded in polyglot files (HTML, JS, PDF, ZIP, ...)
 
+TODO:
+
+- Detect comments in common formats
+- Extract comments and pipe it into `file` or `TrID` to detect suspicious types ?
+
 ## Contributing
 
 Don't forget to run the tests (*and do TDD!*) with `python3 -m unittest tests`.
+
 
 ## Polyglot files
 

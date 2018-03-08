@@ -2,10 +2,10 @@ from .plugins import ALL_PLUGINS
 from .polyglot_level import PolyglotLevel
 
 
-def scan(file) -> [(str, PolyglotLevel)]:
-    results = []
+def scan(filename) -> {str: PolyglotLevel}:
+    results = {}
     for plugin in ALL_PLUGINS:
-        result = plugin.check(file)
+        result = plugin.check(filename)
         if result is not None:
-            results.append((plugin.FILE_EXTENSION, result))
+            results[plugin.FILE_EXTENSION] = result
     return results

@@ -29,3 +29,10 @@ class TestZIPDetector(TestCase):
         self.assertEqual(result['result'], PolyglotLevel.VALID)
         self.assertIn('additional_types', result)
         self.assertEqual(result['additional_types'], ['docx'])
+
+    def test_check_jar(self):
+        result = zip.check('tests/samples/zip/jar.jar')
+        self.assertIsNotNone(result)
+        self.assertEqual(result['result'], PolyglotLevel.VALID)
+        self.assertIn('additional_types', result)
+        self.assertEqual(result['additional_types'], ['jar'])

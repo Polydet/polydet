@@ -24,6 +24,9 @@ def check(filename):
                         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                     if size_of_eocd != EOCD_MIN_SIZE:
                         flag |= PolyglotLevel.GARBAGE_AT_END
-                    return {'result': flag}
+                    result = {'result': flag}
+                    if s.find(b'[Content_Types].xml') != -1:
+                        result['additional_types'] = ['docx']
+                    return result
         except ValueError:  # mmap raise ValueError if empty file
             return None

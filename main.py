@@ -32,11 +32,11 @@ def scan(filename, scan_with_magic=False):
     return results
 
 
-def display_results(results: [(str, PolyglotLevel)], indent=False):
+def display_results(results: [(str, {})], indent=False):
     for result in results.items():
         if indent:
             print('\t', end='')
-        print('%s: %s' % (result[0], result[1]))
+        print('%s: %s' % (result[0], result[1]['result']))
 
 
 def create_arg_parser():

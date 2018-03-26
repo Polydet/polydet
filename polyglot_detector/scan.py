@@ -2,7 +2,7 @@ from .plugins import ALL_PLUGINS
 from .polyglot_level import PolyglotLevel
 
 
-def scan(filename) -> {str: PolyglotLevel}:
+def scan(filename) -> {str: {}}:
     results = {}
     for plugin in ALL_PLUGINS:
         result = plugin.check(filename)

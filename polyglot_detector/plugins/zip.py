@@ -24,6 +24,6 @@ def check(filename):
                         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                     if size_of_eocd != EOCD_MIN_SIZE:
                         flag |= PolyglotLevel.GARBAGE_AT_END
-                    return flag
+                    return {'result': flag}
         except ValueError:  # mmap raise ValueError if empty file
             return None

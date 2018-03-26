@@ -6,11 +6,14 @@ from polyglot_detector.plugins import jpg
 
 class TestJPGDetector(TestCase):
     def test_regular_file(self):
-        self.assertEqual(jpg.check('tests/samples/jpg/regular.jpg'), PolyglotLevel.VALID)
+        result = jpg.check('tests/samples/jpg/regular.jpg')
+        self.assertIsNotNone(result)
+        self.assertEqual(result['result'], PolyglotLevel.VALID)
 
     def test_not_jpg(self):
         self.assertIsNone(jpg.check('tests/samples/zip/regular.zip'))
 
     def test_garbage_at_end(self):
-        self.assertEqual(jpg.check('tests/samples/jpg/garbage_at_end.jpg'),
-                         PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END)
+        result = jpg.check('tests/samples/jpg/garbage_at_end.jpg')
+        self.assertIsNotNone(result)
+        self.assertEqual(result['result'], PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END)

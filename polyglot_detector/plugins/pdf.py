@@ -23,7 +23,7 @@ def check(filename):
                     flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                 if has_garbage_at_end(s):
                     flag |= PolyglotLevel.GARBAGE_AT_END
-                return flag
+                return {'result': flag}
         except ValueError:  # mmap raise ValueError if empty file
             return None
 
@@ -31,4 +31,3 @@ def check(filename):
 def has_garbage_at_end(buffer) -> bool:
     eof_index = buffer.find(_PDF_EOF)
     return eof_index != -1 and eof_index + len(_PDF_EOF) + 1 < buffer.size()  # +1 for potential \n
-

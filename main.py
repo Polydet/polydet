@@ -28,7 +28,7 @@ def scan(filename, scan_with_magic=False):
     results = polyglot_scan(filename)
     if scan_with_magic:
         for ext in magic_scan(filename):
-            results[ext] = results.get(ext, PolyglotLevel.VALID)
+            results[ext] = results.get(ext, {'result': PolyglotLevel.VALID})
     return results
 
 

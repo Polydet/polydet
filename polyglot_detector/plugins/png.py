@@ -25,7 +25,7 @@ def check(filename: str):
             flag = PolyglotLevel.VALID
             if len(file.read(1)) != 0:
                 flag |= PolyglotLevel.GARBAGE_AT_END
-            return {'result': flag}
+            return flag
         except SyntaxError:
             return None
 

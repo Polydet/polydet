@@ -28,7 +28,7 @@ def scan(filename, scan_with_magic=False):
     results = polyglot_scan(filename)
     if scan_with_magic:
         for ext in magic_scan(filename):
-            results[ext] = results.get(ext, {'result': PolyglotLevel.VALID})
+            results[ext] = results.get(ext, PolyglotLevel.VALID)
     return results
 
 
@@ -36,10 +36,7 @@ def display_results(results: [(str, {})], indent=False):
     for result in results.items():
         if indent:
             print('\t', end='')
-        if 'additional_types' not in result[1]:
-            print('%s: %s' % (result[0], result[1]['result']))
-        else:
-            print('%s: %s with additional types %s' % (result[0], result[1]['result'], ','.join(result[1]['additional_types'])))
+        print('%s: %s' % (result[0], result[1]))
 
 
 def create_arg_parser():

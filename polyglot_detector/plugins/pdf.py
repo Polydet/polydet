@@ -23,7 +23,7 @@ def check(filename):
                     flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                 if has_garbage_at_end(s):
                     flag |= PolyglotLevel.GARBAGE_AT_END
-                return {'result': flag}
+                return flag
         except ValueError:  # mmap raise ValueError if empty file
             return None
 

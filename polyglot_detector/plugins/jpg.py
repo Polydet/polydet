@@ -35,7 +35,7 @@ def check(filename: str):
         # TODO Do what when no marker ?
         if end_marker_pos != -1 and len(buf) > end_marker_pos + 2:
             flag |= PolyglotLevel.GARBAGE_AT_END
-        return {'result': flag}
+        return flag
 
 
 def read_section(file) -> (int, int):

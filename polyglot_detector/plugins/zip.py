@@ -24,14 +24,10 @@ def check(filename):
                         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
                     if size_of_eocd != EOCD_MIN_SIZE:
                         flag |= PolyglotLevel.GARBAGE_AT_END
-                    additional_types = []
                     if s.find(b'[Content_Types].xml') != -1:
-                        additional_types.append('docx')
+                        flag = flag.with_embedded('docx')
                     if s.find(b'META-INF') != -1:
-                        additional_types.append('jar')
-                    result = {'result': flag}
-                    if additional_types:
-                        result['additional_types'] = additional_types
-                    return result
+                        flag = flag.with_embedded('jar')
+                    return flag
         except ValueError:  # mmap raise ValueError if empty file
             return None

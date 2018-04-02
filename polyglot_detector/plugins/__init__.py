@@ -1,6 +1,7 @@
-from . import jpg, pdf, png, zip
+from . import html, jpg, pdf, png, zip
 
 ALL_PLUGINS = [
+    html,
     jpg,
     pdf,
     png,

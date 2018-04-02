@@ -1,3 +1,4 @@
+from .test_html import TestHTMLDetector
 from .test_jpg import TestJPGDetector
 from .test_pdf import TestPDFDetector
 from .test_png import TestPNGDetector

@@ -45,9 +45,9 @@ def create_arg_parser():
     arg_parser.add_argument('files', type=str, nargs='+', help='File to scan')
     arg_parser.add_argument('-m', '--magic', dest='magic', action='store_true', help='Scan with libmagic')
     arg_parser.add_argument('--magic-continue', dest='magic_continue', action='store_true',
-                            help='Use the flag MAGIC_CONTINUE with libmagic. Implies --magic')
+                            help='Use the flag MAGIC_CONTINUE with libmagic. Require --magic')
     arg_parser.add_argument('--magic-file', dest='magic_file', type=str,
-                            help='Specify the magic file to use. Implies --magic')
+                            help='Specify the magic file to use. Require --magic')
     return arg_parser
 
 
@@ -61,9 +61,6 @@ def configure_libmagic(magic_continue=False, magic_file=None):
 def main():
     arg_parser = create_arg_parser()
     args = arg_parser.parse_args()
-
-    # `magic_continue` and `magic_file` implies `magic`
-    args.magic = args.magic or args.magic_continue or args.magic_file
 
     # Configure libmagic
     if args.magic:

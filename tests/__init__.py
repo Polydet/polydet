@@ -1,3 +1,4 @@
+from .test_bmp import TestBMPDetector
 from .test_gif import TestGIFDetector
 from .test_html import TestHTMLDetector
 from .test_jpg import TestJPGDetector

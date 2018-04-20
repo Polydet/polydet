@@ -2,6 +2,7 @@ from .test_bmp import TestBMPDetector
 from .test_gif import TestGIFDetector
 from .test_html import TestHTMLDetector
 from .test_jpg import TestJPGDetector
+from .test_mp3 import TestMP3Detector
 from .test_pdf import TestPDFDetector
 from .test_png import TestPNGDetector
 from .test_polyglot_level import TestPolyglotLevel

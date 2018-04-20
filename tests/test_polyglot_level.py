@@ -22,6 +22,7 @@ class TestPolyglotLevel(TestCase):
 
     def test_str(self):
         self.assertEqual(str(PolyglotLevel.VALID), 'PolyglotLevel.VALID')
+        self.assertEqual(str(PolyglotLevel.INVALID), 'PolyglotLevel.INVALID')
         self.assertEqual(str(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING),
                          'PolyglotLevel.VALID|GARBAGE_AT_BEGINNING')
         self.assertEqual(str(PolyglotLevel.VALID.with_embedded('jar')), 'PolyglotLevel.VALID|EMBED(jar)')

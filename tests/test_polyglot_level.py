@@ -17,14 +17,14 @@ class TestPolyglotLevel(TestCase):
     def test_xor(self):
         self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
                          PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END)
-        self.assertEqual(PolyglotLevel.VALID.with_embedded('jar') | PolyglotLevel.VALID.with_embedded('zip'),
-                         PolyglotLevel.VALID.with_embedded('jar').with_embedded('zip'))
+        self.assertEqual(PolyglotLevel.VALID.with_embedded('jar').with_embedded('zip'),
+                         PolyglotLevel.VALID.with_embedded('jar') | PolyglotLevel.VALID.with_embedded('zip'))
 
     def test_str(self):
-        self.assertEqual(str(PolyglotLevel.VALID), 'PolyglotLevel.VALID')
-        self.assertEqual(str(PolyglotLevel.INVALID), 'PolyglotLevel.INVALID')
-        self.assertEqual(str(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING),
-                         'PolyglotLevel.VALID|GARBAGE_AT_BEGINNING')
-        self.assertEqual(str(PolyglotLevel.VALID.with_embedded('jar')), 'PolyglotLevel.VALID|EMBED(jar)')
-        self.assertEqual(str(PolyglotLevel.VALID.with_embedded('jar').with_embedded('docx')),
-                         'PolyglotLevel.VALID|EMBED(docx,jar)')
+        self.assertEqual('PolyglotLevel.VALID', str(PolyglotLevel.VALID))
+        self.assertEqual('PolyglotLevel.INVALID', str(PolyglotLevel.INVALID))
+        self.assertEqual('PolyglotLevel.VALID|GARBAGE_AT_BEGINNING',
+                         str(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING))
+        self.assertEqual('PolyglotLevel.VALID|EMBED(jar)', str(PolyglotLevel.VALID.with_embedded('jar')))
+        self.assertEqual('PolyglotLevel.VALID|EMBED(docx,jar)',
+                         str(PolyglotLevel.VALID.with_embedded('jar').with_embedded('docx')))

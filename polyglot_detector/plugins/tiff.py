@@ -7,8 +7,7 @@ FILE_EXTENSION = 'tiff'
 
 def check(filename: str):
     try:
-        from PIL import TiffImagePlugin
-        TiffImageFile(filename)
+        with TiffImageFile(filename):
+            return PolyglotLevel.VALID
     except SyntaxError:
         return None
-    return PolyglotLevel.VALID

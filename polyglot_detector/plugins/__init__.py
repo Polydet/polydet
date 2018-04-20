@@ -1,4 +1,4 @@
-from . import bmp, gif, html, jpg, pdf, png, tiff, zip
+from . import bmp, gif, html, jpg, pdf, png, rar, tiff, zip
 
 ALL_PLUGINS = [
     bmp,
@@ -7,6 +7,7 @@ ALL_PLUGINS = [
     jpg,
     pdf,
     png,
+    rar,
     tiff,
     zip
 ]

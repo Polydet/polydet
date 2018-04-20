@@ -7,6 +7,7 @@ from polyglot_detector._binary import *
 FILE_EXTENSION = 'rar'
 
 _RAR3_MAGIC = b'Rar!\x1A\x07\x00'
+_RAR5_MAGIC = b'Rar!\x1A\x07\x01\x00'
 
 
 def check(filename: str):
@@ -32,6 +33,7 @@ class _RARFile:
         self.filename = filename
         self.magic_offset = None
         self.buf = None  # type: mmap.mmap
+        self.is_valid = None
 
     def open(self):
         with open(self.filename, 'rb') as fp:
@@ -45,11 +47,26 @@ class _RARFile:
         self.buf.close()
 
     def _parse(self):
-        self.magic_offset = self.buf.find(_RAR3_MAGIC)
-        if self.magic_offset == -1:
+        rar3_magic_offset = self.buf.find(_RAR3_MAGIC)
+        rar5_magic_offset = self.buf.find(_RAR5_MAGIC)
+        if rar3_magic_offset != -1 and (rar5_magic_offset == -1 or rar3_magic_offset < rar5_magic_offset):
+            self.magic_offset = rar3_magic_offset
+            self._parse_rar3()
+        elif rar5_magic_offset != -1 and (rar3_magic_offset == -1 or rar5_magic_offset < rar3_magic_offset):
+            self.magic_offset = rar5_magic_offset
+            self._parse_rar5()
+        else:
             raise SyntaxError("Not a RAR3 file")
+
+    def _parse_rar3(self):
         self.buf.seek(self.magic_offset, io.SEEK_SET)
         parser = _RAR3FileParser(self.buf)
+        parser.parse()
+        self.is_valid = parser.is_valid
+
+    def _parse_rar5(self):
+        self.buf.seek(self.magic_offset, io.SEEK_SET)
+        parser = _RAR5FileParser(self.buf)
         parser.parse()
         self.is_valid = parser.is_valid
 
@@ -67,7 +84,7 @@ class _RAR3FileParser:
     _HEAD_ENDARC = 0x7b
 
     def __init__(self, buf):
-        self._buf = buf # type: mmap.mmap
+        self._buf = buf  # type: mmap.mmap
         self.is_valid = True
 
     def parse(self):
@@ -122,3 +139,63 @@ class _RAR3FileParser:
         if len(read) != size:
             raise SyntaxError("Unexpected EOF")
         return read
+
+
+class _RAR5FileParser:
+
+    _HEAD_ENDARC = 5
+
+    def __init__(self, buf):
+        self._buf = buf  # type: mmap.mmap
+        self.is_valid = True
+
+    def parse(self):
+        # Skip marker
+        self._buf.seek(len(_RAR5_MAGIC), io.SEEK_CUR)
+        while self._parse_block():
+            pass
+
+    def _parse_block(self):
+        try:
+            crc = i32le(self._must_read(4))
+        except SyntaxError:
+            return False
+        size = self._read_vint()
+        offset = self._buf.tell()
+        type = self._read_vint()
+        flag = self._read_vint()
+        data_size = 0
+        if flag & 0x1 != 0:
+            extra_size = self._read_vint()
+        if flag & 0x2 != 0:
+            data_size = self._read_vint()
+        self._buf.seek(offset + size, io.SEEK_SET)
+
+        if data_size != 0:
+            try:
+                self._buf.seek(data_size, io.SEEK_CUR)
+            except ValueError:
+                self._buf.seek(0, io.SEEK_END)
+                self.is_valid = False
+                return False
+
+        if type == _RAR5FileParser._HEAD_ENDARC:
+            return False
+
+        return True
+
+    def _must_read(self, size):
+        read = self._buf.read(size)
+        if len(read) != size:
+            raise SyntaxError("Unexpected EOF")
+        return read
+
+    def _read_vint(self):
+        byte = 0x80
+        total = 0
+        c = 0
+        while byte & 0x80 != 0:
+            byte = i8(self._must_read(1))
+            total += (byte & ~0x80) << (c * 7)
+            c += 1
+        return total

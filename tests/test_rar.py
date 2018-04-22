@@ -30,6 +30,14 @@ class TestRARDetector(unittest.TestCase):
     def test_rar3_unexpected_eof(self):
         self.assertEqual(PolyglotLevel.INVALID, rar.check('tests/samples/rar/unexpected_eof.rar'))
 
+    def test_rar3_garbage_at_end_no_endarc_size_0(self):
+        self.assertEqual(PolyglotLevel.INVALID | PolyglotLevel.GARBAGE_AT_END,
+                         rar.check('tests/samples/rar/garbage_at_end-no_endarc.rar'))
+
+    def test_rar5_garbage_at_end_no_endarc(self):
+        self.assertEqual(PolyglotLevel.INVALID | PolyglotLevel.GARBAGE_AT_END,
+                         rar.check('tests/samples/rar/garbage_at_end-no_endarc.rar5'))
+
     def test_rar5_regular(self):
         self.assertEqual(PolyglotLevel.VALID, rar.check('tests/samples/rar/regular.rar5'))
 

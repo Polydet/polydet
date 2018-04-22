@@ -89,8 +89,11 @@ class _RAR3FileParser(FileParser):
         self.is_valid = True
 
     def parse(self):
-        while self._parse_block():
-            pass
+        try:
+            while self._parse_block():
+                pass
+        except ValueError:
+            self.is_valid = False
 
     def _parser_marker(self):
         self.buf.seek(len(_RAR3_MAGIC), io.SEEK_CUR)
@@ -125,10 +128,12 @@ class _RAR3FileParser(FileParser):
                 self.buf.seek(add_size, io.SEEK_CUR)
             except ValueError:
                 self.buf.seek(0, io.SEEK_END)
-                self.is_valid = False
-                return False
+                raise
         else:
             self.buf.seek(offset + size + add_size, io.SEEK_SET)
+
+        if size + add_size == 0:
+            raise ValueError("Invalid null block size")
 
         if type == _RAR3FileParser._HEAD_ENDARC:
             return False
@@ -147,8 +152,11 @@ class _RAR5FileParser(FileParser):
     def parse(self):
         # Skip marker
         self.buf.seek(len(_RAR5_MAGIC), io.SEEK_CUR)
-        while self._parse_block():
-            pass
+        try:
+            while self._parse_block():
+                pass
+        except ValueError:
+            self.is_valid = False
 
     def _parse_block(self):
         try:
@@ -173,6 +181,9 @@ class _RAR5FileParser(FileParser):
                 self.buf.seek(0, io.SEEK_END)
                 self.is_valid = False
                 return False
+
+        if size + data_size == 0:
+            raise ValueError("Invalid null block size")
 
         if type == _RAR5FileParser._HEAD_ENDARC:
             return False

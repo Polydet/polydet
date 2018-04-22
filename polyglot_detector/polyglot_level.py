@@ -1,17 +1,28 @@
 class PolyglotLevel:
+
+    VALID = None  # type: PolyglotLevel
+
+    INVALID = None  # type: PolyglotLevel
+
+    GARBAGE_AT_BEGINNING = None  # type: PolyglotLevel
+
+    GARBAGE_AT_END = None  # type: PolyglotLevel
+
+    EMBED = None  # type: PolyglotLevel
+
     _VALID_VALUE = 0x1
     """Is a valid file of the scanned type"""
 
-    _GARBAGE_AT_BEGINNING_VALUE = 0x2
+    _INVALID_VALUE = 0x02
+
+    _GARBAGE_AT_BEGINNING_VALUE = 0x4
     """The file has suspicious data at its beginning"""
 
-    _GARBAGE_AT_END_VALUE = 0x4
+    _GARBAGE_AT_END_VALUE = 0x8
     """The file has suspicious data at its end"""
 
-    _EMBED_VALUE = 0x8
+    _EMBED_VALUE = 0x10
     """The file also carry an other valid format (e.g. DOCX and JAR embeded in ZIP)"""
-
-    _INVALID_VALUE = 0x10
 
     def __init__(self, value, embed=None):
         self._value_ = value
@@ -26,14 +37,14 @@ class PolyglotLevel:
         ret = []
         if self._value_ & PolyglotLevel._VALID_VALUE:
             ret.append('VALID')
+        if self._value_ & PolyglotLevel._INVALID_VALUE:
+            ret.append('INVALID')
         if self._value_ & PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE:
             ret.append('GARBAGE_AT_BEGINNING')
         if self._value_ & PolyglotLevel._GARBAGE_AT_END_VALUE:
             ret.append('GARBAGE_AT_END')
         if self._value_ & PolyglotLevel._EMBED_VALUE:
             ret.append('EMBED(%s)' % ','.join(sorted(self.embedded)))
-        if self._value_ & PolyglotLevel._INVALID_VALUE:
-            ret.append('INVALID')
         return self.__class__.__name__ + '.' + '|'.join(ret)
 
     def __eq__(self, other):

@@ -34,24 +34,32 @@ class TestHTMLDetector(TestCase):
 
     def test_garbage_beginning_1(self):
         result = html.check('tests/samples/html/garbage_beginning_1.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING, result)
+        self.assertEqual(PolyglotLevel.VALID
+                         | PolyglotLevel.GARBAGE_AT_BEGINNING,
+                         result)
 
     def test_garbage_beginning_2(self):
         result = html.check('tests/samples/html/garbage_beginning_2.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING, result)
+        self.assertEqual(PolyglotLevel.VALID
+                         | PolyglotLevel.GARBAGE_AT_BEGINNING,
+                         result)
 
     def test_garbage_end_1(self):
         result = html.check('tests/samples/html/garbage_end_1.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         result)
 
     def test_garbage_end_2(self):
         result = html.check('tests/samples/html/garbage_end_2.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         result)
 
     def test_garbage_end_3(self):
         result = html.check('tests/samples/html/garbage_end_3.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         result)
 
     def test_garbage_end_4(self):
         result = html.check('tests/samples/html/garbage_end_4.html')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         result)

@@ -3,11 +3,13 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 
 FILE_EXTENSION = 'html'
 
+
 def is_whitespace(contents: bytes):
     for elem in contents:
         if elem != ord(' ') and elem != ord('\t') and elem != ord('\n'):
             return False
     return True
+
 
 def check(filename: str):
     with open(filename, 'rb') as file:

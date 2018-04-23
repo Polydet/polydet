@@ -10,7 +10,7 @@ __PDF_MAGIC = b'%PDF-'
 __PDF_EOF = b'\n%%EOF'
 
 __PDF_FULL_MAGIC_LEN = 9
-__PDF_FULL_MAGIC_RE = re.compile(b'%PDF-[12].\d\n')
+__PDF_FULL_MAGIC_RE = re.compile(b'%PDF-\d.\d\n')
 
 
 def check(filename):

@@ -3,13 +3,15 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 
 _MAGIC = b'\xFF\xFB'
 
-# synchsafe is a method of encoding numbers in ID3V2 which discards the highest bit.
+
+# synchsafe is a number encoding method in ID3V2 which removes the highest bit.
 def synchsafe(input: bytes):
     ret = 0
     for byte in input:
         ret *= 128
         ret += int(byte) & 127
     return ret
+
 
 def check(filename: str):
     with open(filename, 'rb') as file:
@@ -26,6 +28,7 @@ def check(filename: str):
                 elif magic == begin:
                     return PolyglotLevel.VALID
                 else:
-                    return PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING
+                    return PolyglotLevel.VALID \
+                        | PolyglotLevel.GARBAGE_AT_BEGINNING
         except ValueError:  # mmap raise ValueError if empty file
             return None

@@ -1,6 +1,8 @@
 import mmap
 from polyglot_detector.polyglot_level import PolyglotLevel
 
+FILE_EXTENSION = 'mp3'
+
 _MAGIC = b'\xFF\xFB'
 
 

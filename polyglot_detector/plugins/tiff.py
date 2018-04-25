@@ -6,6 +6,17 @@ from polyglot_detector._parser import FileParser, LITTLE_ENDIAN, BIG_ENDIAN
 
 FILE_EXTENSION = 'tiff'
 
+RULES = """
+rule IsTIFF {
+  strings:
+    $ii_magic = { 49 49 2A 00 }
+    $mm_magic = { 4D 4D 00 2A }
+    
+  condition:
+    $ii_magic at 0 or $mm_magic at 0
+}
+"""
+
 
 def check(filename: str):
     """
@@ -27,6 +38,12 @@ def check(filename: str):
             return flag
     except SyntaxError:
         return None
+
+
+def check_with_matches(filename, matches):
+    if 'IsTIFF' in matches:
+        return check(filename)
+    return None
 
 
 class _TIFFFile:

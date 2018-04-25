@@ -24,3 +24,7 @@ class TestZIPDetector(TestCase):
     def test_check_jar(self):
         result = zip.check('tests/samples/zip/jar.jar')
         self.assertEqual(PolyglotLevel.VALID.with_embedded('jar'), result)
+
+    def test_too_short(self):
+        result = zip.check('tests/samples/zip/too_short')
+        self.assertIsNone(result)

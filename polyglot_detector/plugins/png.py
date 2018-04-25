@@ -5,10 +5,26 @@ from polyglot_detector.utils import must_read
 
 FILE_EXTENSION = 'png'
 
+RULES = """
+rule IsPNG {
+  strings:
+    $magic = { 89 50 4E 47 0D 0A 1A 0A }
+    
+  condition:
+    $magic at 0
+}
+"""
+
 _MAGIC = b'\x89PNG\r\n\x1a\n'
 _CRC_SIZE = 4
 _PNG_SECTION_HEADING_SIZE = 8
 _PNG_END_SECTION = 'IEND'
+
+
+def check_with_matches(filename, matches):
+    if 'IsPNG' in matches:
+        return check(filename)
+    return None
 
 
 def check(filename: str):

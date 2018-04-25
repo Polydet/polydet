@@ -1,50 +1,58 @@
-import mmap
-import re
+import os
+import yara
 from polyglot_detector.polyglot_level import PolyglotLevel
 
 
 FILE_EXTENSION = 'pdf'
 
-
-__PDF_MAGIC = b'%PDF-'
-__PDF_EOF = b'\n%%EOF'
-
-__PDF_FULL_MAGIC_LEN = 9
-__PDF_FULL_MAGIC_RE = re.compile(b'%PDF-\d.\d\n')
+RULES = """
+rule HasTruncatedMagic {
+  strings:
+    $magic = "%PDF-"
+  condition:
+    $magic
+}
+rule HasMagic {
+  strings:
+    $magic = /%PDF-\d.\d\\n/
+  condition:
+    $magic
+}
+rule HasEOF {
+  strings:
+    $eof = /\\n%%EOF\\n?/
+  condition:
+    HasTruncatedMagic and $eof
+}
+"""
 
 
 def check(filename):
-
-    with open(filename, 'rb') as file:
-        try:
-            with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as buf:
-
-                magic_offset = buf.find(__PDF_MAGIC)
-                if magic_offset == -1:
-                    return None
-
-                if magic_offset <= 1024 and is_magic_valid(buf, magic_offset):
-                    flag = PolyglotLevel.VALID
-                else:
-                    flag = PolyglotLevel.INVALID
-
-                if magic_offset != 0:
-                    flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
-                if has_garbage_at_end(buf):
-                    flag |= PolyglotLevel.GARBAGE_AT_END
-
-                return flag
-
-        except ValueError:  # mmap raise ValueError if empty file
-            return None
+    rules = yara.compile(source=RULES)
+    matches = rules.match(filename)
+    return check_with_matches(filename, {m.rule: m for m in matches})
 
 
-def is_magic_valid(buf, magic_offset) -> bool:
-    buf.seek(magic_offset)
-    full_magic = buf.read(__PDF_FULL_MAGIC_LEN)
-    return __PDF_FULL_MAGIC_RE.match(full_magic) is not None
+def check_with_matches(filename, matches):
+    truncated_magic_offset = matches['HasTruncatedMagic'].strings[0][0] if 'HasTruncatedMagic' in matches else None
+    if truncated_magic_offset is None:
+        return None
 
+    magic_offset = matches['HasMagic'].strings[0][0] if 'HasMagic' in matches else None
+    eof_match = matches['HasEOF'].strings[-1] if 'HasEOF' in matches else None
 
-def has_garbage_at_end(buf) -> bool:
-    eof_index = buf.find(__PDF_EOF)
-    return eof_index != -1 and eof_index + len(__PDF_EOF) + 1 < buf.size()  # +1 for potential \n
+    # If the offset of the full magic is the first magic found in the file
+    if magic_offset == truncated_magic_offset <= 1024:
+        flag = PolyglotLevel.VALID
+    else:
+        flag = PolyglotLevel.INVALID
+
+    if truncated_magic_offset > 0:
+        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+
+    file_size = os.stat(filename).st_size
+
+    if eof_match[0] + len(eof_match[2]) < file_size:
+        flag |= PolyglotLevel.GARBAGE_AT_END
+
+    return flag

@@ -3,4 +3,5 @@
 """
 
 from .polyglot_level import PolyglotLevel
+from .rules import *
 from .scan import scan

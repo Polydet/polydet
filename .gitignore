@@ -1,3 +1,6 @@
+# Yara rules
+*.yar
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -49,8 +49,8 @@ def create_arg_parser():
     arg_parser.add_argument('--magic-file', dest='magic_file', type=str,
                             help='Specify the magic file to use. Require --magic')
     arg_parser.add_argument('-r', '--rules', dest='rules', type=str, help='File to load and store rules')
-    arg_parser.add_argument('-c', '--compile', dest='compile', action='store_true', help='Compile rules and quit. '
-                                                                                         'Required --rules')
+    arg_parser.add_argument('-c', '--recompile', dest='recompile', action='store_true', help='Re-compile rules. '
+                                                                                             'Required --rules')
     return arg_parser
 
 
@@ -59,10 +59,6 @@ def configure_libmagic(magic_continue=False, magic_file=None):
     MAGIC = magic.open(magic.MAGIC_MIME_TYPE
                        | ((magic.MAGIC_CONTINUE | magic.MAGIC_RAW) if magic_continue else magic.MAGIC_NONE))
     MAGIC.load(magic_file)
-
-
-def configure_rules(rulefile):
-    pass
 
 
 def main():
@@ -74,10 +70,10 @@ def main():
         configure_libmagic(magic_continue=args.magic_continue, magic_file=args.magic_file)
 
     if args.rules:
-        if args.compile:
+        if args.recompile:
             rules.save(args.rules)
-            return
-        rules.load(args.rules)
+        else:
+            rules.load_or_compile(args.rules)
 
     if len(args.files) == 1:
         display_results(scan(args.files[0], args.magic))

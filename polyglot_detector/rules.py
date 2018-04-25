@@ -16,6 +16,17 @@ def load(filename):
     __COMPILED_RULES = yara.load(filepath=filename)
 
 
+def load_or_compile(filename):
+    """Try to load the rules from a file, or compile them if the file is not found"""
+    global __COMPILED_RULES
+    try:
+        with open(filename, 'rb') as rulefile:
+            __COMPILED_RULES = yara.load(file=rulefile)
+    except FileNotFoundError:
+        __compile_rules()
+        save(filename)
+
+
 def save(filename):
     get().save(filepath=filename)
 

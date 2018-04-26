@@ -8,10 +8,14 @@ TODO:
 - Detect comments in common formats
 - Extract comments and pipe it into `file` or `TrID` to detect suspicious types ?
 
+## Dependencies
+
+- Python 3.5 or above.
+- (yara-python)[https://github.com/VirusTotal/yara-python] (can be installed with `pip3 install yara-python`).
+
 ## Contributing
 
-Don't forget to run the tests (*and do TDD!*) with `python3 -m unittest tests`.
-
+Don't forget to run the tests (*and do TDD!*) with `python3 -m unittest`.
 
 ## Polyglot files
 

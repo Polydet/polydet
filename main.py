@@ -48,9 +48,9 @@ def create_arg_parser():
                             help='Use the flag MAGIC_CONTINUE with libmagic. Require --magic')
     arg_parser.add_argument('--magic-file', dest='magic_file', type=str,
                             help='Specify the magic file to use. Require --magic')
-    arg_parser.add_argument('-r', '--rules', dest='rules', type=str, help='File to load and store rules')
+    arg_parser.add_argument('-r', '--rules', dest='rules', type=str, help='File to load and store rules to speed up the process.')
     arg_parser.add_argument('-c', '--recompile', dest='recompile', action='store_true', help='Re-compile rules. '
-                                                                                             'Required --rules')
+                                                                                             'Require --rules')
     return arg_parser
 
 

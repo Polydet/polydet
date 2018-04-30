@@ -25,6 +25,10 @@ class TestZIPDetector(TestCase):
         result = zip.check('tests/samples/zip/jar.jar')
         self.assertEqual(PolyglotLevel.VALID.with_embedded('jar'), result)
 
+    def test_check_apk(self):
+        result = zip.check('tests/samples/zip/apk.apk')
+        self.assertEqual(PolyglotLevel.VALID.with_embedded('jar').with_embedded('apk'), result)
+
     def test_too_short(self):
         result = zip.check('tests/samples/zip/too_short')
         self.assertIsNone(result)

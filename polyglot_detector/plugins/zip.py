@@ -36,6 +36,14 @@ rule IsJAR {
   condition:
     IsZIP and $lfh_and_meta
 }
+rule IsAPK {
+  strings:
+  //                    P  K             A  n  d  r  o  i  d  M  a  n  i  f  e  s  t  .  x  m  l
+  $lfh_and_android = { 50 4B 03 04 [26] 41 6E 64 72 6F 69 64 4D 61 6e 69 66 65 73 74 2E 78 6D 6C}
+  
+  condition:
+    IsZIP and $lfh_and_android
+}
 """
 
 __EOCD_MIN_SIZE = 22
@@ -69,5 +77,8 @@ def check_with_matches(filename, matches):
 
     if 'IsJAR' in matches:
         flag = flag.with_embedded('jar')
+
+    if 'IsAPK' in matches:
+        flag = flag.with_embedded('apk')
 
     return flag

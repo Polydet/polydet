@@ -28,3 +28,7 @@ class TestZIPDetector(TestCase):
     def test_too_short(self):
         result = zip.check('tests/samples/zip/too_short')
         self.assertIsNone(result)
+
+    def test_fake_docx_or_jar(self):
+        result = zip.check('tests/samples/zip/false-docx-jar.zip')
+        self.assertEqual(PolyglotLevel.VALID, result)

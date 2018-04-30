@@ -21,17 +21,20 @@ rule GarbageAtBeginning {
 }
 rule IsDOCX {
   strings:
-    $ContentTypesFilename = "[Content_Types].xml"
+    //                         P  K             [  C  o  n  t  e  n  t  _  T  y  p  e  s  ]  .  x  m  l
+    $lfh_and_content_type = { 50 4B 03 04 [26] 5B 43 6F 6E 74 65 6E 74 5F 54 79 70 65 73 5D 2E 78 6D 6C }
 
   condition:
-    IsZIP and $ContentTypesFilename
+    IsZIP and $lfh_and_content_type
 }
 rule IsJAR {
   strings:
-    $MetaInfFilename = "META-INF"
+    //                 P  K             M  E  T  A  -  I  N  F  /
+    $lfh_and_meta = { 50 4B 03 04 [26] 4D 45 54 41 2D 49 4E 46 2F }
+    // the file name must be 30 bytes after the beginning of the LFH (or the CFD)
 
   condition:
-    IsZIP and $MetaInfFilename
+    IsZIP and $lfh_and_meta
 }
 """
 

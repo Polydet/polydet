@@ -12,6 +12,14 @@ rule IsMP3 {
   condition:
     $magic
 }
+
+rule HasID3 {
+  strings:
+    //        I  D  3
+    $id3 = { 49 44 33 [6] ?? }
+  condition:
+    $id3 at 0
+}
 """
 
 _MAGIC = b'\xFF\xFB'
@@ -26,22 +34,14 @@ def check(filename):
 def check_with_matches(filename: str, matches):
     if 'IsMP3' not in matches:
         return None
-
-    with open(filename, 'rb') as file:
-        begin = 0
-        if file.read(len("ID3")) == b'ID3':
-            file.seek(6)
-            size = __synchsafe(file.read(4))
-            begin = 10 + size
-        try:
-            with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as s:
-                flag = PolyglotLevel.VALID
-                magic = s.find(_MAGIC)
-                if magic > begin:
-                    flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
-                return flag
-        except ValueError:  # mmap raise ValueError if empty file
-            return None
+    begin = 0
+    if 'HasID3' in matches:
+        size = __synchsafe(bytes(matches['HasID3'].strings[0][2][6:]))
+        begin = 10 + size
+    flag = PolyglotLevel.VALID
+    if matches['IsMP3'].strings[0][0] > begin:
+        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    return flag
 
 
 # synchsafe is a number encoding method in ID3V2 which removes the highest bit.

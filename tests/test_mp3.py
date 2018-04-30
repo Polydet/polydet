@@ -17,3 +17,8 @@ class TestMP3Detector(TestCase):
         self.assertEqual(PolyglotLevel.VALID
                          | PolyglotLevel.GARBAGE_AT_BEGINNING,
                          result)
+
+    def test_garbage_in_middle(self):
+        result = mp3.check('tests/samples/mp3/garbage_in_middle.mp3')
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_IN_MIDDLE,
+                         result)

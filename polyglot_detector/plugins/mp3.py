@@ -1,3 +1,4 @@
+import math
 import mmap
 import yara
 
@@ -6,9 +7,9 @@ from polyglot_detector.polyglot_level import PolyglotLevel
 FILE_EXTENSION = 'mp3'
 
 RULES = """
-rule IsMP3 {
+rule MP3Header {
   strings:
-    $magic = { FF FB }
+    $magic = { FF FB ?? }
   condition:
     $magic
 }
@@ -32,15 +33,30 @@ def check(filename):
 
 
 def check_with_matches(filename: str, matches):
-    if 'IsMP3' not in matches:
+    if 'MP3Header' not in matches:
         return None
     begin = 0
     if 'HasID3' in matches:
         size = __synchsafe(bytes(matches['HasID3'].strings[0][2][6:]))
         begin = 10 + size
     flag = PolyglotLevel.VALID
-    if matches['IsMP3'].strings[0][0] > begin:
+    if matches['MP3Header'].strings[0][0] > begin:
         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    idx = 0
+    while idx < len(matches['MP3Header'].strings):
+        string = matches['MP3Header'].strings[idx]
+        third_byte = string[2][2]
+        bitrate = __bitrate_conversion[(int(third_byte) & 0xF0) >> 4] * 1000
+        sampling_frequency = __sampling_conversion[(int(third_byte) & 0x0C) >> 2]
+        padding = (int(third_byte) & 0x02) >> 1
+        unit_size = math.floor(144 * bitrate / sampling_frequency) + padding  # Source for computation : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
+        next_headers = [s for s in matches['MP3Header'].strings if s[0] >= string[0] + unit_size]
+        if not next_headers:
+            break
+        if next_headers[0][0] != string[0] + unit_size:
+            flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
+            break
+        idx = matches['MP3Header'].strings.index(next_headers[0])
     return flag
 
 
@@ -51,3 +67,10 @@ def __synchsafe(input: bytes):
         ret *= 128
         ret += int(byte) & 127
     return ret
+
+
+# Source : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
+__bitrate_conversion = [0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320]
+
+# Source : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
+__sampling_conversion = [44100, 48000, 32000]

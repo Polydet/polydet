@@ -8,6 +8,7 @@ class TestPolyglotLevel(TestCase):
         self.assertEqual(PolyglotLevel.VALID, PolyglotLevel.VALID)
         self.assertEqual(PolyglotLevel.GARBAGE_AT_BEGINNING, PolyglotLevel.GARBAGE_AT_BEGINNING)
         self.assertEqual(PolyglotLevel.GARBAGE_AT_END, PolyglotLevel.GARBAGE_AT_END)
+        self.assertEqual(PolyglotLevel.GARBAGE_IN_MIDDLE, PolyglotLevel.GARBAGE_IN_MIDDLE)
         self.assertEqual(PolyglotLevel.EMBED, PolyglotLevel.EMBED)
         self.assertEqual(PolyglotLevel.EMBED.with_embedded('jar'), PolyglotLevel.EMBED.with_embedded('jar'))
 

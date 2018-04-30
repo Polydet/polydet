@@ -1,5 +1,6 @@
 import math
 import mmap
+import os
 import yara
 
 from polyglot_detector.polyglot_level import PolyglotLevel
@@ -52,6 +53,8 @@ def check_with_matches(filename: str, matches):
         unit_size = math.floor(144 * bitrate / sampling_frequency) + padding  # Source for computation : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
         next_headers = [s for s in matches['MP3Header'].strings if s[0] >= string[0] + unit_size]
         if not next_headers:
+            if os.stat(filename).st_size != string[0] + unit_size:
+                flag |= PolyglotLevel.GARBAGE_AT_END
             break
         if next_headers[0][0] != string[0] + unit_size:
             flag |= PolyglotLevel.GARBAGE_IN_MIDDLE

@@ -27,3 +27,11 @@ class TestMP3Detector(TestCase):
         result = mp3.check('tests/samples/mp3/garbage_at_end.mp3')
         self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
                          result)
+
+    def test_fake(self):
+        result = mp3.check('tests/samples/mp3/fake1.mp3')
+        self.assertEqual(result, None)
+        result = mp3.check('tests/samples/mp3/fake2.mp3')
+        self.assertEqual(result, None)
+        result = mp3.check('tests/samples/mp3/fake3.mp3')
+        self.assertEqual(result, None)

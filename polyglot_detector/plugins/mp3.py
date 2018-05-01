@@ -36,6 +36,9 @@ def check(filename):
 def check_with_matches(filename: str, matches):
     if 'MP3Header' not in matches:
         return None
+    strings = list(filter(__is_good, matches['MP3Header'].strings))
+    if not strings:
+        return None
     begin = 0
     if 'HasID3' in matches:
         size = __synchsafe(bytes(matches['HasID3'].strings[0][2][6:]))
@@ -44,14 +47,14 @@ def check_with_matches(filename: str, matches):
     if matches['MP3Header'].strings[0][0] > begin:
         flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
     idx = 0
-    while idx < len(matches['MP3Header'].strings):
-        string = matches['MP3Header'].strings[idx]
+    while idx < len(strings):
+        string = strings[idx]
         third_byte = string[2][2]
         bitrate = __bitrate_conversion[(int(third_byte) & 0xF0) >> 4] * 1000
         sampling_frequency = __sampling_conversion[(int(third_byte) & 0x0C) >> 2]
         padding = (int(third_byte) & 0x02) >> 1
         unit_size = math.floor(144 * bitrate / sampling_frequency) + padding  # Source for computation : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
-        next_headers = [s for s in matches['MP3Header'].strings if s[0] >= string[0] + unit_size]
+        next_headers = [s for s in strings if s[0] >= string[0] + unit_size]
         if not next_headers:
             if os.stat(filename).st_size != string[0] + unit_size:
                 flag |= PolyglotLevel.GARBAGE_AT_END
@@ -59,8 +62,19 @@ def check_with_matches(filename: str, matches):
         if next_headers[0][0] != string[0] + unit_size:
             flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
             break
-        idx = matches['MP3Header'].strings.index(next_headers[0])
+        idx = strings.index(next_headers[0])
     return flag
+
+
+def __is_good(string):
+    third_byte = string[2][2]
+    if (int(third_byte) & 0xF0) >> 4 == 0xF:
+        return False
+    if (int(third_byte) & 0xF0) >> 4 == 0x0:
+        return False
+    if (int(third_byte) & 0x0C) >> 2 == 0x3:
+        return False
+    return True
 
 
 # synchsafe is a number encoding method in ID3V2 which removes the highest bit.

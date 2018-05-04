@@ -39,6 +39,8 @@ def check_with_matches(filename: str, matches):
     strings = list(filter(__is_good, matches['MP3Header'].strings))
     if not strings:
         return None
+    if len(strings) < 50:
+        return None
     begin = 0
     if 'HasID3' in matches:
         size = __synchsafe(bytes(matches['HasID3'].strings[0][2][6:]))

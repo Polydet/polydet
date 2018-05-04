@@ -39,6 +39,8 @@ def check_with_matches(filename: str, matches):
     strings = list(filter(__is_good, matches['MP3Header'].strings))
     if not strings:
         return None
+    # Heuristic to reduce the number of false positives:
+    # each frame is 28ms long, so we search for at least 50 frames
     if len(strings) < 50:
         return None
     begin = 0

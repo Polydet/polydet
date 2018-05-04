@@ -63,7 +63,6 @@ def check_with_matches(filename: str, matches):
             break
         if next_headers[0][0] != string[0] + unit_size:
             flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
-            break
         idx = strings.index(next_headers[0])
     return flag
 

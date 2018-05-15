@@ -7,21 +7,19 @@ FILE_EXTENSION = 'tar'
 
 # TODO: This rules may be too restrictive
 RULES = """
-// Inspired from the file software
 rule IsTAR {
-  strings:
-    $padding = { 00 00 00 00 00 00 00 00 }
-    $null_space_or_oct = /\\x00| |[0-7]/
-    $null_or_space = { ( 00 | 20 ) }
-    $space_or_0 = { ( 20 | 30 ) }
+  // Inspired from the file software, "archive" magic file
   condition:
-    $padding at 500
+    uint32(500) == 0 and uint32(504) == 0
       and uint16be(0) > 0x1F00 and uint16be(0) < 0xFCFD
       and uint16be(508)&0x8B9E8DFF == 0
-      and $null_space_or_oct at 100
-      and $null_space_or_oct at 101
-      and $space_or_0 at 148
-      and $null_or_space at 155
+      // File mode begins with 0, space or octal
+      and (uint8(100) == 0 or uint8(100) == 20 or uint8(100) >= 30 and uint8(100) <= 37)
+      and (uint8(101) == 0 or uint8(101) == 20 or uint8(101) >= 30 and uint8(101) <= 37)
+      // 147 is \\x00 of ASCII '0'
+      and (uint8(148) == 0 or uint8(148) == 30)
+      // 155 is \\x00 or space
+      and (uint8(155) == 0 or uint8(155) == 20)
 }
 //rule is_ustar {
 //  strings:
@@ -58,7 +56,10 @@ def check_with_matches(filename, matches):
             after_null = filename_field[null + 1:]
             if not all(b == 0 for b in after_null):
                 flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
-            file_size = int(header[124:124+12].strip(b'\x00'), base=8)
+            try:
+                file_size = int(header[124:124+12].strip(b'\x00'), base=8)
+            except ValueError:
+                return None
             data_block_nb = 1
             while data_block_nb * __BLOCK_SIZE < file_size:
                 data_block_nb += 1

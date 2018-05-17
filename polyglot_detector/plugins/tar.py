@@ -46,9 +46,9 @@ def check_with_matches(filename, matches):
         return None
     flag = PolyglotLevel.VALID
 
-    with open(filename, 'rb') as file:
+    with open(filename, 'rb') as fd:
         while True:
-            header = file.read(512)
+            header = fd.read(512)
             if len(header) != 512 or all(b == 0 for b in header):
                 break
             filename_field = header[:100]
@@ -60,9 +60,9 @@ def check_with_matches(filename, matches):
                 file_size = int(header[124:124+12].strip(b'\x00'), base=8)
             except ValueError:
                 return None
-            data_block_nb = 1
+            data_block_nb = 0
             while data_block_nb * __BLOCK_SIZE < file_size:
                 data_block_nb += 1
-            file.seek(data_block_nb * __BLOCK_SIZE, io.SEEK_CUR)
+            fd.seek(data_block_nb * __BLOCK_SIZE, io.SEEK_CUR)
 
     return flag

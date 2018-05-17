@@ -14,12 +14,12 @@ rule IsTAR {
       and uint16be(0) > 0x1F00 and uint16be(0) < 0xFCFD
       and uint16be(508)&0x8B9E8DFF == 0
       // File mode begins with 0, space or octal
-      and (uint8(100) == 0 or uint8(100) == 20 or uint8(100) >= 30 and uint8(100) <= 37)
-      and (uint8(101) == 0 or uint8(101) == 20 or uint8(101) >= 30 and uint8(101) <= 37)
-      // 147 is \\x00 of ASCII '0'
-      and (uint8(148) == 0 or uint8(148) == 30)
+      and (uint8(100) == 0 or uint8(100) == 0x20 or uint8(100) >= 0x30 and uint8(100) <= 0x37)
+      and (uint8(101) == 0 or uint8(101) == 0x20 or uint8(101) >= 0x30 and uint8(101) <= 0x37)
+      // 147 is \\x00 or ASCII '0'
+      and (uint8(148) == 0 or uint8(148) == 0x30)
       // 155 is \\x00 or space
-      and (uint8(155) == 0 or uint8(155) == 20)
+      and (uint8(155) == 0 or uint8(155) == 0x20)
 }
 //rule is_ustar {
 //  strings:

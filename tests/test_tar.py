@@ -17,3 +17,7 @@ class TestTARDetector(unittest.TestCase):
     def test_payload_in_filename_field(self):
         self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_IN_MIDDLE,
                          tar.check('tests/samples/tar/payload_in_filename_field.tar'))
+
+    def test_garbage_at_end(self):
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         tar.check('tests/samples/tar/garbage_at_end.tar'))

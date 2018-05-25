@@ -52,7 +52,7 @@ def check_with_matches(filename, matches):
 
     file_size = os.stat(filename).st_size
 
-    if eof_match[0] + len(eof_match[2]) < file_size:
+    if eof_match is not None and eof_match[0] + len(eof_match[2]) < file_size:
         flag |= PolyglotLevel.GARBAGE_AT_END
 
     return flag

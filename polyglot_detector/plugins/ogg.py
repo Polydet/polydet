@@ -3,6 +3,8 @@ import yara
 
 from polyglot_detector.polyglot_level import PolyglotLevel
 
+FILE_EXTENSION = 'ogg'
+
 RULES = """
 rule OGGHeader {
   strings:

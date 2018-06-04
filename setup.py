@@ -8,4 +8,4 @@ setup(name='polyglot_detector',  # Name subject to change
       url='https://git.cs.kent.ac.uk/hljl2/polyglot-detector',
       packages=find_packages(exclude=['tests']),
       zip_safe=True,
-      install_requires=['yara-python'])
+      install_requires=['file-magic', 'yara-python'])

@@ -85,6 +85,16 @@ class PolyglotLevel:
             return NotImplemented
         return self.__class__(self._value_ ^ other._value_, self.embedded ^ other.embedded)
 
+    def __invert__(self):
+        """Return the invert of the value. Discard embed"""
+        return PolyglotLevel((~self._value_) &
+                             (PolyglotLevel._VALID_VALUE
+                              | PolyglotLevel._INVALID_VALUE
+                              | PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE
+                              | PolyglotLevel._GARBAGE_IN_MIDDLE_VALUE
+                              | PolyglotLevel._GARBAGE_AT_END_VALUE
+                              | PolyglotLevel._EMBED_VALUE))
+
 
 PolyglotLevel.VALID = PolyglotLevel(PolyglotLevel._VALID_VALUE)
 PolyglotLevel.GARBAGE_AT_BEGINNING = PolyglotLevel(PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE)

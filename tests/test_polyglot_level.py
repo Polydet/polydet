@@ -29,3 +29,7 @@ class TestPolyglotLevel(TestCase):
         self.assertEqual('PolyglotLevel.VALID|EMBED(jar)', str(PolyglotLevel.VALID.with_embedded('jar')))
         self.assertEqual('PolyglotLevel.VALID|EMBED(docx,jar)',
                          str(PolyglotLevel.VALID.with_embedded('jar').with_embedded('docx')))
+
+    def test_invert(self):
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END | PolyglotLevel.EMBED,
+                         ~(PolyglotLevel.INVALID | PolyglotLevel.GARBAGE_IN_MIDDLE | PolyglotLevel.GARBAGE_AT_BEGINNING))

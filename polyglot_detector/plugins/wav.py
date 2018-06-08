@@ -24,4 +24,7 @@ def check(filename):
 def check_with_matches(filename: str, matches):
     if 'WAVHeader' not in matches:
         return None
-    return PolyglotLevel.VALID
+    flag = PolyglotLevel.VALID
+    if matches['WAVHeader'].strings[0][0] > 0:
+        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    return flag

@@ -17,3 +17,8 @@ class TestWAVDetector(TestCase):
         self.assertEqual(PolyglotLevel.VALID
                          | PolyglotLevel.GARBAGE_AT_BEGINNING,
                          result)
+
+    def test_garbage_at_end(self):
+        result = wav.check('tests/samples/wav/garbage_at_end.wav')
+        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+                         result)

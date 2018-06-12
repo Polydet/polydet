@@ -1,5 +1,6 @@
 import io
 import mmap
+import yara
 
 from polyglot_detector.polyglot_level import PolyglotLevel
 from polyglot_detector._parser import FileParser, LITTLE_ENDIAN, BIG_ENDIAN
@@ -19,6 +20,12 @@ rule IsTIFF {
 
 
 def check(filename: str):
+    rules = yara.compile(source=RULES)
+    matches = rules.match(filename)
+    return check_with_matches(filename, {m.rule: m for m in matches})
+
+
+def check_with_matches(filename, matches):
     """
     Check if the file is a TIFF file, and if it is, if there is potentially other formats in the file
     WARNING: The method used to know if there is unusued garbage at the end of the file is not perfect !
@@ -27,6 +34,10 @@ def check(filename: str):
     :param filename: Path to the file
     :return: A PolyglotLevel or None if the file is not a TIFF
     """
+
+    if 'IsTIFF' not in matches:
+        return None
+
     try:
         with _TIFFFile(filename) as image:
             flag = PolyglotLevel.VALID
@@ -38,12 +49,6 @@ def check(filename: str):
             return flag
     except SyntaxError:
         return None
-
-
-def check_with_matches(filename, matches):
-    if 'IsTIFF' in matches:
-        return check(filename)
-    return None
 
 
 class _TIFFFile:

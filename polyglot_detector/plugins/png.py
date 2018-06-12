@@ -1,5 +1,6 @@
 import io
 import struct
+import yara
 from polyglot_detector.polyglot_level import PolyglotLevel
 from polyglot_detector.utils import must_read
 
@@ -21,13 +22,15 @@ _PNG_SECTION_HEADING_SIZE = 8
 _PNG_END_SECTION = 'IEND'
 
 
-def check_with_matches(filename, matches):
-    if 'IsPNG' in matches:
-        return check(filename)
-    return None
-
-
 def check(filename: str):
+    rules = yara.compile(source=RULES)
+    matches = rules.match(filename)
+    return check_with_matches(filename, {m.rule: m for m in matches})
+
+
+def check_with_matches(filename, matches):
+    if 'IsPNG' not in matches:
+        return None
 
     with open(filename, 'rb') as file:
         if file.read(len(_MAGIC)) != _MAGIC:

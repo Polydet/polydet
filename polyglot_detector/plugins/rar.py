@@ -1,5 +1,6 @@
 import io
 import mmap
+import yara
 from polyglot_detector.polyglot_level import PolyglotLevel
 from polyglot_detector._binary import *
 from polyglot_detector._parser import FileParser, LITTLE_ENDIAN
@@ -10,8 +11,8 @@ FILE_EXTENSION = 'rar'
 RULES = """
 rule IsRAR {
   strings:
-    $rar3_magic = { 56 61 72 21 1A 07 00 }
-    $rar5_magic = { 56 61 72 21 1A 07 01 00 }
+    $rar3_magic = { 52 61 72 21 1A 07 00 }
+    $rar5_magic = { 52 61 72 21 1A 07 01 00 }
   condition:
     $rar3_magic or $rar5_magic
 }
@@ -22,6 +23,14 @@ _RAR5_MAGIC = b'Rar!\x1A\x07\x01\x00'
 
 
 def check(filename: str):
+    rules = yara.compile(source=RULES)
+    matches = rules.match(filename)
+    return check_with_matches(filename, {m.rule: m for m in matches})
+
+
+def check_with_matches(filename, matches):
+    if 'IsRAR' not in matches:
+        return None
     try:
         with _RARFile(filename) as rar_file:
             flag = PolyglotLevel(0)
@@ -36,12 +45,6 @@ def check(filename: str):
             return flag
     except SyntaxError:
         return None
-
-
-def check_with_matches(filename, matches):
-    if 'IsRAR' in matches:
-        return check(filename)
-    return None
 
 
 class _RARFile:

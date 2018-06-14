@@ -1,6 +1,10 @@
+import logging
 import yara
 
 from .plugins import ALL_PLUGINS
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 __COMPILED_RULES = None
 
@@ -13,6 +17,7 @@ def get():
 
 def load(filename):
     global __COMPILED_RULES
+    logger.info('Load rules')
     __COMPILED_RULES = yara.load(filepath=filename)
 
 
@@ -34,6 +39,7 @@ def save(filename):
 def __compile_rules():
     global __COMPILED_RULES
     rule_sources = {}
+    logger.info('Compile rules')
     for plugin in ALL_PLUGINS:
         rule_sources[plugin.FILE_EXTENSION] = plugin.RULES
     __COMPILED_RULES = yara.compile(sources=rule_sources)

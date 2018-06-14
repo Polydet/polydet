@@ -1,5 +1,9 @@
+import logging
 import magic
 import mimetypes
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.NullHandler())
 
 __magic = None
 """:type __magic: magic.Magic"""
@@ -37,6 +41,7 @@ def magic_scan(filename):
     for file_mime in file_mimes.split('\012- '):
         if file_mime != __OCTET_STREAM_MIME:
             extension = mimetypes.guess_extension(file_mime)
+            logger.debug('Guessed %s extension for MIME %s' % (extension, file_mime))
             if extension is not None:
                 results.append(extension[1:])
     return results

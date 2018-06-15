@@ -3,5 +3,7 @@
 """
 
 from .polyglot_level import PolyglotLevel
-from .rules import *
+from . import rules
 from .scan import scan
+
+__all__ = [PolyglotLevel, scan]

@@ -58,8 +58,7 @@ def check_with_matches(filename, matches):
             try:
                 file_size = int(header[124:124+12].strip(b'\x00'), base=8)
             except ValueError:
-                # TODO Return Invalid
-                return None
+                return level.invalid()
             data_block_nb = 0
             while data_block_nb * __BLOCK_SIZE < file_size:
                 data_block_nb += 1

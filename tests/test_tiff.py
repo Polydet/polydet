@@ -1,7 +1,7 @@
 from unittest import TestCase, skip
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import tiff
+from polydet import PolyglotLevel
+from polydet.plugins import tiff
 
 
 class TestTIFFDetector(TestCase):

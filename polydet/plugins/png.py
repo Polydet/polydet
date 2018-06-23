@@ -1,8 +1,8 @@
 import io
 import struct
 import yara
-from polyglot_detector.polyglot_level import PolyglotLevel
-from polyglot_detector.utils import must_read
+from polydet.polyglot_level import PolyglotLevel
+from polydet.utils import must_read
 
 FILE_EXTENSION = 'png'
 

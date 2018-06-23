@@ -1,7 +1,7 @@
 import io
 import yara
 
-from polyglot_detector import PolyglotLevel
+from polydet import PolyglotLevel
 
 FILE_EXTENSION = 'tar'
 

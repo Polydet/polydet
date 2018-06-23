@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-setup(name='polyglot_detector',  # Name subject to change
+setup(name='polydet',
       version='0.1',
       description='Detect suspicious data in files',
       author='Julien Campion, Hugo Laloge',

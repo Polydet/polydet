@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import wav
+from polydet import PolyglotLevel
+from polydet.plugins import wav
 
 
 class TestWAVDetector(TestCase):

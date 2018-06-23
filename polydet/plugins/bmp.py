@@ -3,7 +3,7 @@ from struct import unpack
 import yara
 
 from PIL.BmpImagePlugin import BmpImageFile
-from polyglot_detector.polyglot_level import PolyglotLevel
+from polydet.polyglot_level import PolyglotLevel
 
 FILE_EXTENSION = 'bmp'
 

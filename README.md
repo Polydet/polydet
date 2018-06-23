@@ -1,12 +1,14 @@
-# Polyglot detector
+# Polydet
 
-The purpose of this package is to detect polyglot files.
-It focuses on the common formats that are usually embeded in polyglot files (HTML, JS, PDF, ZIP, ...)
+Polydet is a library built to detect polyglots files, i.e. files readable in multiple formats.
+It focuses on the common formats that are usually embedded in polyglot files (HTML, JS, PDF, ZIP, ...), as well as
+common media file formats (PNG, JPG, MP3, ...) to detect abnormal data chunks.
 
 TODO:
 
 - Detect comments in common formats
-- Extract comments and pipe it into `file` or `TrID` to detect suspicious types ?
+- Refactor PolyglotLevel to show range of unusued bytes.
+- Refactor TIFF format to not treat the data between the header and the IFD as automatically "used".
 
 ## Dependencies
 
@@ -17,7 +19,9 @@ TODO:
 
 Don't forget to run the tests (*and do TDD!*) with `python3 -m unittest`.
 
-## Polyglot files
+## Common polyglot formats
+
+This section describe some of the detected formats and how the detector works, its limitations, etc...
 
 ### PDF
 

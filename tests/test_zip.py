@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import zip
+from polydet import PolyglotLevel
+from polydet.plugins import zip
 
 
 class TestZIPDetector(TestCase):

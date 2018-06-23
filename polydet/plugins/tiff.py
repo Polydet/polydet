@@ -2,8 +2,8 @@ import io
 import mmap
 import yara
 
-from polyglot_detector.polyglot_level import PolyglotLevel
-from polyglot_detector._parser import FileParser, LITTLE_ENDIAN, BIG_ENDIAN
+from polydet.polyglot_level import PolyglotLevel
+from polydet._parser import FileParser, LITTLE_ENDIAN, BIG_ENDIAN
 
 FILE_EXTENSION = 'tiff'
 

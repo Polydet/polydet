@@ -1,7 +1,7 @@
 import unittest
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import rar
+from polydet import PolyglotLevel
+from polydet.plugins import rar
 
 
 class TestRARDetector(unittest.TestCase):

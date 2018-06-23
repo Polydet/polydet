@@ -1,7 +1,7 @@
 import unittest
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import tar
+from polydet import PolyglotLevel
+from polydet.plugins import tar
 
 
 # TODO: look at https://sourceforge.net/projects/s-tar/files/testscripts/ for tests

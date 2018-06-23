@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import png
+from polydet import PolyglotLevel
+from polydet.plugins import png
 
 
 class TestPNGDetector(TestCase):

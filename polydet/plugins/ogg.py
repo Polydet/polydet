@@ -1,7 +1,7 @@
 import os
 import yara
 
-from polyglot_detector.polyglot_level import PolyglotLevel
+from polydet.polyglot_level import PolyglotLevel
 
 FILE_EXTENSION = 'ogg'
 

@@ -1,9 +1,9 @@
 import io
 import mmap
 import yara
-from polyglot_detector.polyglot_level import PolyglotLevel
-from polyglot_detector._binary import *
-from polyglot_detector._parser import FileParser, LITTLE_ENDIAN
+from polydet.polyglot_level import PolyglotLevel
+from polydet._binary import *
+from polydet._parser import FileParser, LITTLE_ENDIAN
 
 
 FILE_EXTENSION = 'rar'

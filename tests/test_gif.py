@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import gif
+from polydet import PolyglotLevel
+from polydet.plugins import gif
 
 
 class TestGIFDetector(TestCase):

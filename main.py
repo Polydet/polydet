@@ -2,7 +2,7 @@
 
 import argparse
 
-from polyglot_detector import magic, scan, rules
+from polydet import magic, scan, rules
 
 
 def display_results(results: [(str, {})], indent=False):

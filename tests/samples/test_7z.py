@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from polyglot_detector import PolyglotLevel
-from polyglot_detector.plugins import seven_zip
+from polydet import PolyglotLevel
+from polydet.plugins import seven_zip
 
 
 class TestBMPDetector(TestCase):

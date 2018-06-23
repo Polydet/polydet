@@ -33,16 +33,12 @@ def check_with_matches(filename, matches):
         return None
     try:
         with _RARFile(filename) as rar_file:
-            flag = PolyglotLevel(0)
+            level = PolyglotLevel(is_valid=rar_file.is_valid)
             if rar_file.magic_offset != 0:
-                flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+                level.add_chunk(0, rar_file.magic_offset)
             if rar_file.buf.tell() != rar_file.buf.size():
-                flag |= PolyglotLevel.GARBAGE_AT_END
-            if rar_file.is_valid:
-                flag |= PolyglotLevel.VALID
-            else:
-                flag |= PolyglotLevel.INVALID
-            return flag
+                level.add_chunk(rar_file.buf.tell(), rar_file.buf.size() - rar_file.buf.tell())
+            return level
     except SyntaxError:
         return None
 

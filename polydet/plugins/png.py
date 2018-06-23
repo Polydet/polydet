@@ -40,11 +40,15 @@ def check_with_matches(filename, matches):
             while name != _PNG_END_SECTION:
                 name, length = read_section(file)
                 file.seek(length + _CRC_SIZE, io.SEEK_CUR)
-            file.seek(_CRC_SIZE, io.SEEK_CUR)
-            flag = PolyglotLevel.VALID
-            if len(file.read(1)) != 0:
-                flag |= PolyglotLevel.GARBAGE_AT_END
-            return flag
+            png_end = file.tell()
+
+            file.seek(0, io.SEEK_END)
+            file_size = file.tell()
+
+            level = PolyglotLevel()
+            if png_end != file_size:
+                level.add_chunk(png_end, file_size - png_end)
+            return level
         except SyntaxError:
             return None
 

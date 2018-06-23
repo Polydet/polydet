@@ -40,13 +40,13 @@ def check_with_matches(filename, matches):
 
     try:
         with _TIFFFile(filename) as image:
-            flag = PolyglotLevel.VALID
-            read_zones = image.buf.get_read_zones()
-            last_zone = read_zones[-1]
-            last_offset = last_zone[0] + last_zone[1]
-            if last_offset < image.buf.size():
-                flag |= PolyglotLevel.GARBAGE_AT_END
-            return flag
+            level = PolyglotLevel()
+            for chunk in image.buf.get_not_read_zones():
+                # FIXME Add other unreaded zone when parser will read image data
+                # For now we only add the last zone if it is at the end of the file
+                if chunk[0] + chunk[1] == image.buf.size():
+                    level.suspicious_chunks.append(chunk)
+            return level
     except SyntaxError:
         return None
 
@@ -183,7 +183,7 @@ class _MemoryMarker:
                 zone_size = self.size() - (offset + size)
             if zone_size != 0:
                 results[offset + size] = zone_size
-        return results
+        return sorted(results.items(), key=lambda s: s[0])
 
     def read(self, size):
         res = self.__buf.read(size)

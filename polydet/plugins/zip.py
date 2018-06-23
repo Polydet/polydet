@@ -13,11 +13,14 @@ rule IsZIP {
   condition:
     $EOCD_magic in (0..filesize - 22)
 }
-rule GarbageAtBeginning {
+rule HasZIPMagic {
   strings:
+    $CDFH_magic = { 50 4B 01 02 }
     $LFH_magic = { 50 4B 03 04 }
+    $EOCD_magic = { 50 4B 05 06 }
+    $DD_magic = { 50 4B 07 08 }
   condition:
-    not $LFH_magic at 0
+    $LFH_magic or $CDFH_magic or $EOCD_magic or $DD_magic
 }
 rule IsDOCX {
   strings:
@@ -60,25 +63,31 @@ def check_with_matches(filename, matches):
     if zip_rule is None:
         return None
 
-    flag = PolyglotLevel.VALID
+    flag = PolyglotLevel()
 
     file_size = os.stat(filename).st_size
     last_eocd_magic = [s for s in zip_rule.strings if s[1] == '$EOCD_magic'][0]
     eocd_offset = last_eocd_magic[0]
 
-    if eocd_offset + __EOCD_MIN_SIZE < file_size:
-        flag |= PolyglotLevel.GARBAGE_AT_END
+    if 'HasZIPMagic' in matches:
+        rules = matches['HasZIPMagic']
+        sorted_strings = sorted(rules.strings, key=lambda string: string[0])
+        first_string = sorted_strings[0]
+        if first_string[0] != 0:
+            flag.add_chunk(0, first_string[0])
 
-    if 'GarbageAtBeginning' in matches:
-        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    # TODO Take comment in account ? Mark as less suspicious ?
+    eocd_min_end = eocd_offset + __EOCD_MIN_SIZE
+    if eocd_min_end < file_size:
+        flag.add_chunk(eocd_min_end, file_size - eocd_min_end)
 
     if 'IsDOCX' in matches:
-        flag = flag.with_embedded('docx')
+        flag.embed('docx')
 
     if 'IsJAR' in matches:
-        flag = flag.with_embedded('jar')
+        flag.embed('jar')
 
     if 'IsAPK' in matches:
-        flag = flag.with_embedded('apk')
+        flag.embed('apk')
 
     return flag

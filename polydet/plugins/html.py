@@ -25,6 +25,7 @@ def check(filename):
     return check_with_matches(filename, {m.rule: m for m in matches})
 
 
+# TODO Add acceptance for whitespace at beginning
 # TODO Check lowercase doctypes
 # TODO Check unclosed tags as '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' or '<html onload="">'.
 #    Can be done with ungreedy matching in yara
@@ -54,14 +55,14 @@ def check_with_matches(filename: str, matches):
                         doc_end = tag_pos + len(tag) + 2
                     break
             if doc_start != -1:
-                flag = PolyglotLevel.VALID
+                level = PolyglotLevel()
                 if doc_start != 0:
-                    flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+                    level.add_chunk(0, doc_start)
                 buf.seek(doc_end)
                 contents = buf.read()
                 if not __is_whitespace(contents):
-                    flag |= PolyglotLevel.GARBAGE_AT_END
-                return flag
+                    level.add_chunk(doc_end, len(contents))
+                return level
             else:
                 return None
 

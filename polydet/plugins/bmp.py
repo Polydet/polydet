@@ -29,12 +29,13 @@ def check_with_matches(filename, matches):
 
     try:
         with BmpImageFile(filename) as image:
-            flag = PolyglotLevel.VALID
+            level = PolyglotLevel()
             image.fp.seek(2)
-            file_size = unpack('<I', image.fp.read(4))[0]
+            image_size = unpack('<I', image.fp.read(4))[0]
             image.fp.seek(0, io.SEEK_END)
-            if image.fp.tell() != file_size:
-                flag |= PolyglotLevel.GARBAGE_AT_END
-            return flag
+            file_size = image.fp.tell()
+            if file_size != image_size:
+                level.add_chunk(image_size, file_size - image_size)
+            return level
     except SyntaxError:
         return None

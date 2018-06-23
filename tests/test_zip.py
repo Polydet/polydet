@@ -6,33 +6,31 @@ from polydet.plugins import zip
 
 class TestZIPDetector(TestCase):
     def test_check_regular_file(self):
-        result = zip.check('tests/samples/zip/regular.zip')
-        self.assertEqual(PolyglotLevel.VALID, result)
+        self.assertEqual(PolyglotLevel(),
+                         zip.check('tests/samples/zip/regular.zip'))
 
     def test_check_garbage_at_the_beginning(self):
-        result = zip.check('tests/samples/zip/garbage_at_beginning.zip')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_BEGINNING, result)
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0, 0x8F)]),
+                         zip.check('tests/samples/zip/garbage_at_beginning.zip'))
 
     def test_check_garbage_at_the_end(self):
-        result = zip.check('tests/samples/zip/garbage_at_end.zip')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0xB5, 0x10)]),
+                         zip.check('tests/samples/zip/garbage_at_end.zip'))
 
     def test_check_docx(self):
-        result = zip.check('tests/samples/zip/docx.docx')
-        self.assertEqual(PolyglotLevel.VALID.with_embedded('docx'), result)
+        self.assertEqual(PolyglotLevel(embedded={'docx'}),
+                         zip.check('tests/samples/zip/docx.docx'))
 
     def test_check_jar(self):
-        result = zip.check('tests/samples/zip/jar.jar')
-        self.assertEqual(PolyglotLevel.VALID.with_embedded('jar'), result)
+        self.assertEqual(PolyglotLevel(embedded={'jar'}),
+                         zip.check('tests/samples/zip/jar.jar'))
 
     def test_check_apk(self):
-        result = zip.check('tests/samples/zip/apk.apk')
-        self.assertEqual(PolyglotLevel.VALID.with_embedded('jar').with_embedded('apk'), result)
+        self.assertEqual(PolyglotLevel(embedded={'apk', 'jar'}),
+                         zip.check('tests/samples/zip/apk.apk'))
 
     def test_too_short(self):
-        result = zip.check('tests/samples/zip/too_short')
-        self.assertIsNone(result)
+        self.assertIsNone(zip.check('tests/samples/zip/too_short'))
 
     def test_fake_docx_or_jar(self):
-        result = zip.check('tests/samples/zip/false-docx-jar.zip')
-        self.assertEqual(PolyglotLevel.VALID, result)
+        self.assertEqual(PolyglotLevel(), zip.check('tests/samples/zip/false-docx-jar.zip'))

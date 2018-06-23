@@ -6,7 +6,7 @@ from polydet.plugins import wav
 
 class TestWAVDetector(TestCase):
     def test_regular_file(self):
-        self.assertEqual(PolyglotLevel.VALID,
+        self.assertEqual(PolyglotLevel(),
                          wav.check('tests/samples/wav/regular.wav'))
 
     def test_not_wav(self):
@@ -14,11 +14,9 @@ class TestWAVDetector(TestCase):
 
     def test_garbage_at_beginning(self):
         result = wav.check('tests/samples/wav/garbage_at_beginning.wav')
-        self.assertEqual(PolyglotLevel.VALID
-                         | PolyglotLevel.GARBAGE_AT_BEGINNING,
-                         result)
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0, 0xF)]), result)
 
     def test_garbage_at_end(self):
         result = wav.check('tests/samples/wav/garbage_at_end.wav')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END,
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0x56414, 0x2E8C)]),
                          result)

@@ -1,104 +1,55 @@
 class PolyglotLevel:
 
-    VALID = None  # type: PolyglotLevel
+    def __init__(self, is_valid = True, suspicious_chunks: [(int, int)] = None, embedded: set = None):
+        self.is_valid = is_valid
+        self.suspicious_chunks = suspicious_chunks if suspicious_chunks is not None else []
+        self.embedded = embedded if embedded is not None else set()
 
-    INVALID = None  # type: PolyglotLevel
+    def invalid(self) -> 'PolyglotLevel':
+        """
+        Set the valid flag to False
+        :return: self
+        """
+        self.is_valid = False
 
-    GARBAGE_AT_BEGINNING = None  # type: PolyglotLevel
+        return self
 
-    GARBAGE_AT_END = None  # type: PolyglotLevel
+    def add_chunk(self, offset: int, size: int) -> 'PolyglotLevel':
+        """
+        Add a chunk to the list of suspicious chunks
 
-    GARBAGE_IN_MIDDLE = None  # type: PolyglotLevel
+        Note: do not try to merge overlapping chunks (for now?)
+        :param offset: Offset of the chunk to add
+        :param size: Size of the chunk to add
+        :return: self
+        """
+        self.suspicious_chunks.append((offset, size))
+        self.suspicious_chunks.sort(key=lambda chunk: chunk[0])
+        return self
 
-    EMBED = None  # type: PolyglotLevel
+    def embed(self, type: str) -> 'PolyglotLevel':
+        """
+        Add a type to the list of embedded types
+        :param type: type to add
+        :return: self
+        """
+        self.embedded.add(type)
 
-    _VALID_VALUE = 0x1
-    """Is a valid file of the scanned type"""
-
-    _INVALID_VALUE = 0x02
-
-    _GARBAGE_AT_BEGINNING_VALUE = 0x4
-    """The file has suspicious data at its beginning"""
-
-    _GARBAGE_AT_END_VALUE = 0x8
-    """The file has suspicious data at its end"""
-
-    _GARBAGE_IN_MIDDLE_VALUE = 0x10
-    """The file has suspicious data inside it"""
-
-    _EMBED_VALUE = 0x20
-    """The file also carry an other valid format (e.g. DOCX and JAR embeded in ZIP)"""
-
-    def __init__(self, value, embed=None):
-        self._value_ = value
-        self.embedded = embed if embed is not None else set()
-
-    def with_embedded(self, type):
-        c = self | PolyglotLevel.EMBED
-        c.embedded.add(type)
-        return c
-
-    def __str__(self) -> str:
-        ret = []
-        if self._value_ & PolyglotLevel._VALID_VALUE:
-            ret.append('VALID')
-        if self._value_ & PolyglotLevel._INVALID_VALUE:
-            ret.append('INVALID')
-        if self._value_ & PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE:
-            ret.append('GARBAGE_AT_BEGINNING')
-        if self._value_ & PolyglotLevel._GARBAGE_AT_END_VALUE:
-            ret.append('GARBAGE_AT_END')
-        if self._value_ & PolyglotLevel._GARBAGE_IN_MIDDLE_VALUE:
-            ret.append('GARBAGE_IN_MIDDLE')
-        if self._value_ & PolyglotLevel._EMBED_VALUE:
-            ret.append('EMBED(%s)' % ','.join(sorted(self.embedded)))
-        return self.__class__.__name__ + '.' + '|'.join(ret)
+        return self
 
     def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self._value_ == other._value_ and self.embedded == other.embedded
+        if not isinstance(other, PolyglotLevel):
+            raise NotImplemented()
+        return self.is_valid == other.is_valid \
+            and self.suspicious_chunks == other.suspicious_chunks \
+            and self.embedded == other.embedded
 
     def __repr__(self):
-        return '<%s: %d [%s]>' % (str(self), self._value_, ','.join(self.embedded))
-
-    def __contains__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return other._value_ & self._value_ == other._value_
-
-    def __bool__(self):
-        return bool(self._value_)
-
-    def __or__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self.__class__(self._value_ | other._value_, self.embedded | other.embedded)
-
-    def __and__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self.__class__(self._value_ & other._value_, self.embedded & other.embedded)
-
-    def __xor__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self.__class__(self._value_ ^ other._value_, self.embedded ^ other.embedded)
-
-    def __invert__(self):
-        """Return the invert of the value. Discard embed"""
-        return PolyglotLevel((~self._value_) &
-                             (PolyglotLevel._VALID_VALUE
-                              | PolyglotLevel._INVALID_VALUE
-                              | PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE
-                              | PolyglotLevel._GARBAGE_IN_MIDDLE_VALUE
-                              | PolyglotLevel._GARBAGE_AT_END_VALUE
-                              | PolyglotLevel._EMBED_VALUE))
-
-
-PolyglotLevel.VALID = PolyglotLevel(PolyglotLevel._VALID_VALUE)
-PolyglotLevel.GARBAGE_AT_BEGINNING = PolyglotLevel(PolyglotLevel._GARBAGE_AT_BEGINNING_VALUE)
-PolyglotLevel.GARBAGE_AT_END = PolyglotLevel(PolyglotLevel._GARBAGE_AT_END_VALUE)
-PolyglotLevel.GARBAGE_IN_MIDDLE = PolyglotLevel(PolyglotLevel._GARBAGE_IN_MIDDLE_VALUE)
-PolyglotLevel.EMBED = PolyglotLevel(PolyglotLevel._EMBED_VALUE)
-PolyglotLevel.INVALID = PolyglotLevel(PolyglotLevel._INVALID_VALUE)
+        args = []
+        if not self.is_valid:
+            args.append('is_valid=False')
+        if self.suspicious_chunks:
+            args.append('suspicious_chunks=%s' % self.suspicious_chunks)
+        if self.embedded:
+            args.append('embedded=%s' % self.embedded)
+        return 'PolyglotLevel(' + ', '.join(args) + ')'

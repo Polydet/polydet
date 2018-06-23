@@ -42,17 +42,15 @@ def check_with_matches(filename, matches):
     eof_match = matches['HasEOF'].strings[-1] if 'HasEOF' in matches else None
 
     # If the offset of the full magic is the first magic found in the file
-    if magic_offset == truncated_magic_offset <= 1024:
-        flag = PolyglotLevel.VALID
-    else:
-        flag = PolyglotLevel.INVALID
+    level = PolyglotLevel(is_valid=magic_offset == truncated_magic_offset <= 1024)
 
     if truncated_magic_offset > 0:
-        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+        level.add_chunk(0, truncated_magic_offset)
 
     file_size = os.stat(filename).st_size
 
     if eof_match is not None and eof_match[0] + len(eof_match[2]) < file_size:
-        flag |= PolyglotLevel.GARBAGE_AT_END
+        pdf_end = eof_match[0] + len(eof_match[2])
+        level.add_chunk(pdf_end, file_size - pdf_end)
 
-    return flag
+    return level

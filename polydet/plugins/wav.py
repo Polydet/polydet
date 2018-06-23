@@ -25,14 +25,16 @@ def check(filename):
 def check_with_matches(filename: str, matches):
     if 'WAVHeader' not in matches:
         return None
-    flag = PolyglotLevel.VALID
+    level = PolyglotLevel()
     start = matches['WAVHeader'].strings[0][0]
     if start > 0:
-        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+        level.add_chunk(0, start)
     size = __get_size(matches['WAVHeader'].strings[0][2])
-    if os.stat(filename).st_size > start + size:
-        flag |= PolyglotLevel.GARBAGE_AT_END
-    return flag
+    end_offset = start + size
+    file_size = os.stat(filename).st_size
+    if end_offset < file_size:
+        level.add_chunk(end_offset, file_size - end_offset)
+    return level
 
 
 # The size of the file should be equal to the size indicated

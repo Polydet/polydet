@@ -24,18 +24,22 @@ def check(filename):
 def check_with_matches(filename: str, matches):
     if 'OGGHeader' not in matches:
         return None
-    flag = PolyglotLevel.VALID
-    if matches['OGGHeader'].strings[0][0] > 0:
-        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    level = PolyglotLevel()
+    begin_offset = matches['OGGHeader'].strings[0][0]
+    if begin_offset > 0:
+        level.add_chunk(0, begin_offset)
     for string_idx, string in enumerate(matches['OGGHeader'].strings):
         page_size = __get_page_size(filename, string)
         if string_idx < len(matches['OGGHeader'].strings) - 1:
-            if matches['OGGHeader'].strings[string_idx + 1][0] > string[0] + page_size:
-                flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
+            next_header_offset = matches['OGGHeader'].strings[string_idx + 1][0]
+            if next_header_offset > string[0] + page_size:
+                level.add_chunk(string[0] + page_size, next_header_offset - (string[0] + page_size))
         else:
-            if os.stat(filename).st_size != string[0] + page_size:
-                flag |= PolyglotLevel.GARBAGE_AT_END
-    return flag
+            file_size = os.stat(filename).st_size
+            end_offset = string[0] + page_size
+            if file_size != end_offset:
+                level.add_chunk(end_offset, file_size - end_offset)
+    return level
 
 
 def __get_page_size(filename, string):

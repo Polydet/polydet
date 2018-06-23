@@ -35,35 +35,47 @@ def check(filename):
 def check_with_matches(filename, matches):
     if 'IsTAR' not in matches:
         return None
-    flag = PolyglotLevel.VALID
+    level = PolyglotLevel()
 
     with open(filename, 'rb') as fd:
+        offset = 0
         while True:
             # Read header
-            header = fd.read(512)
-            if len(header) != 512 or all(b == 0 for b in header):
+            header = fd.read(__BLOCK_SIZE)
+            if len(header) != __BLOCK_SIZE or all(b == 0 for b in header):
                 # End of file header
                 break
+
             # Detect garbage in file name
             filename_field = header[:100]
             null = filename_field.find(b'\x00')
             after_null = filename_field[null + 1:]
-            if not all(b == 0 for b in after_null):
-                flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
+            for i, b in enumerate(after_null):
+                if b != 0:
+                    level.add_chunk(offset + (100 - len(after_null) + i), len(after_null) - i)
+                    break
+
             try:
                 file_size = int(header[124:124+12].strip(b'\x00'), base=8)
             except ValueError:
+                # TODO Return Invalid
                 return None
             data_block_nb = 0
             while data_block_nb * __BLOCK_SIZE < file_size:
                 data_block_nb += 1
             fd.seek(data_block_nb * __BLOCK_SIZE, io.SEEK_CUR)
+            offset += __BLOCK_SIZE + data_block_nb * __BLOCK_SIZE
 
         # Test for non-null byte at the end
-        block = fd.read(512)
+        block = fd.read(__BLOCK_SIZE)
         while len(block) != 0 and all(b == 0 for b in block):
-            block = fd.read(512)
-        if len(block) != 0:
-            flag |= PolyglotLevel.GARBAGE_AT_END
+            block = fd.read(__BLOCK_SIZE)
+        offset = fd.tell() - len(block)
 
-    return flag
+        fd.seek(0, io.SEEK_END)
+        file_size = fd.tell()
+
+        if len(block) != 0:
+            level.add_chunk(offset, file_size - offset)
+
+    return level

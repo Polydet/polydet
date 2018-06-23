@@ -6,12 +6,11 @@ from polydet.plugins import jpg
 
 class TestJPGDetector(TestCase):
     def test_regular_file(self):
-        result = jpg.check('tests/samples/jpg/regular.jpg')
-        self.assertEqual(PolyglotLevel.VALID, result)
+        self.assertEqual(PolyglotLevel(), jpg.check('tests/samples/jpg/regular.jpg'))
 
     def test_not_jpg(self):
         self.assertIsNone(jpg.check('tests/samples/zip/regular.zip'))
 
     def test_garbage_at_end(self):
-        result = jpg.check('tests/samples/jpg/garbage_at_end.jpg')
-        self.assertEqual(PolyglotLevel.VALID | PolyglotLevel.GARBAGE_AT_END, result)
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0x63BF, 0x343)]),
+                         jpg.check('tests/samples/jpg/garbage_at_end.jpg'))

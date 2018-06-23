@@ -1,4 +1,5 @@
 from PIL.GifImagePlugin import GifImageFile
+import io
 import yara
 
 from polydet.polyglot_level import PolyglotLevel
@@ -30,9 +31,14 @@ def check_with_matches(filename, matches):
             image.seek(image.n_frames - 1)
             while image.data():  # Pass the last frame
                 pass
-            flag = PolyglotLevel.VALID
-            if image.fp.read(2) != b';':
-                flag |= PolyglotLevel.GARBAGE_AT_END
-            return flag
+            level = PolyglotLevel()
+            image_end = image.fp.tell()
+            if image.fp.read(1) == b';':
+                image_end += 1
+            image.fp.seek(0, io.SEEK_END)
+            image_size = image.fp.tell()
+            if image_end != image_size:
+                level.add_chunk(image_end, image_size - image_end)
+            return level
     except SyntaxError:
         return None

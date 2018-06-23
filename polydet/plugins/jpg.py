@@ -44,7 +44,7 @@ def check_with_matches(filename, matches):
     with open(filename, 'rb') as file:
         try:
             with mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as buf:
-                flag = PolyglotLevel.VALID
+                level = PolyglotLevel()
 
                 buf.seek(len(__JPG_MAGIC))
                 try:
@@ -53,7 +53,7 @@ def check_with_matches(filename, matches):
                         section, length = read_section(buf)
                         buf.seek(length - 2, io.SEEK_CUR)
                 except (ValueError, SyntaxError):
-                    return PolyglotLevel.INVALID
+                    return level.invalid()
 
                 scan_offset = buf.tell()
 
@@ -62,8 +62,9 @@ def check_with_matches(filename, matches):
                 end_marker_matches_after_start_of_scan = [m for m in end_marker_matches if m[0] > scan_offset]
                 end_marker_offset = end_marker_matches_after_start_of_scan[0][0] if end_marker_matches_after_start_of_scan else None
                 if end_marker_offset is not None and end_marker_offset + len(__JPG_END_MARKER) < buf.size():
-                    flag |= PolyglotLevel.GARBAGE_AT_END
-                return flag
+                    end_offset = end_marker_offset + len(__JPG_END_MARKER)
+                    level.add_chunk(end_offset, buf.size() - end_offset)
+                return level
 
         except ValueError:
             return None

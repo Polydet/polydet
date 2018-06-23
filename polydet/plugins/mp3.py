@@ -47,9 +47,10 @@ def check_with_matches(filename: str, matches):
     if 'HasID3' in matches:
         size = __synchsafe(bytes(matches['HasID3'].strings[0][2][6:]))
         begin = 10 + size
-    flag = PolyglotLevel.VALID
-    if matches['MP3Header'].strings[0][0] > begin:
-        flag |= PolyglotLevel.GARBAGE_AT_BEGINNING
+    level = PolyglotLevel()
+    first_mp3_header_offset = matches['MP3Header'].strings[0][0]
+    if first_mp3_header_offset > begin:
+        level.add_chunk(0, first_mp3_header_offset)
     idx = 0
     while idx < len(strings):
         string = strings[idx]
@@ -60,13 +61,14 @@ def check_with_matches(filename: str, matches):
         unit_size = math.floor(144 * bitrate / sampling_frequency) + padding  # Source for computation : https://www.researchgate.net/publication/225793510_A_study_on_multimedia_file_carving_method, page 8
         next_headers = [s for s in strings if s[0] >= string[0] + unit_size]
         if not next_headers:
-            if os.stat(filename).st_size != string[0] + unit_size:
-                flag |= PolyglotLevel.GARBAGE_AT_END
+            file_size = os.stat(filename).st_size
+            if file_size != string[0] + unit_size:
+                level.add_chunk(string[0] + unit_size, file_size - (string[0] + unit_size))
             break
         if next_headers[0][0] != string[0] + unit_size:
-            flag |= PolyglotLevel.GARBAGE_IN_MIDDLE
+            level.add_chunk(string[0] + unit_size, next_headers[0][0] - (string[0] + unit_size))
         idx = strings.index(next_headers[0])
-    return flag
+    return level
 
 
 def __is_good(string):

@@ -26,8 +26,12 @@ def set_magic_file(path):
     __magic.load(path)
 
 
-def magic_scan(filename):
-    """Scan for a single file type with libmagic"""
+def magic_scan(filename) -> [str]:
+    """
+    Scan for a single file type with libmagic
+    :param filename: File to scan
+    :return: A list of extensions
+    """
     global __magic
 
     __init()

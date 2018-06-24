@@ -15,5 +15,5 @@ def scan(filename, use_magic=False) -> {str: {}}:
             results[plugin.FILE_EXTENSION] = result
     if use_magic:
         for ext in magic_scan(filename):
-            results[ext] = results.get(ext, PolyglotLevel.VALID)
+            results[ext] = results.get(ext, PolyglotLevel())
     return results

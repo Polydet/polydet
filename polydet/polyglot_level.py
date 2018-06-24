@@ -49,7 +49,7 @@ class PolyglotLevel:
         if not self.is_valid:
             args.append('is_valid=False')
         if self.suspicious_chunks:
-            args.append('suspicious_chunks=%s' % self.suspicious_chunks)
+            args.append('suspicious_chunks=[%s]' % ', '.join('(0x%X, %d)' % chunk for chunk in self.suspicious_chunks))
         if self.embedded:
             args.append('embedded=%s' % self.embedded)
         return 'PolyglotLevel(' + ', '.join(args) + ')'

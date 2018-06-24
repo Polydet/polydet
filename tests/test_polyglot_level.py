@@ -24,8 +24,8 @@ class TestPolyglotLevel(TestCase):
     def test_str(self):
         self.assertEqual('PolyglotLevel()', str(PolyglotLevel()))
         self.assertEqual('PolyglotLevel(is_valid=False)', str(PolyglotLevel(is_valid=False)))
-        self.assertEqual('PolyglotLevel(suspicious_chunks=[(0, 100), (5, 200)])',
+        self.assertEqual('PolyglotLevel(suspicious_chunks=[(0x0, 100), (0x5, 200)])',
                          str(PolyglotLevel(suspicious_chunks=[(0, 100), (5, 200)])))
         self.assertEqual("PolyglotLevel(embedded={'docx'})", str(PolyglotLevel(embedded={'docx'})))
-        self.assertEqual("PolyglotLevel(is_valid=False, suspicious_chunks=[(0, 100), (5, 200)], embedded={'jar'})",
+        self.assertEqual("PolyglotLevel(is_valid=False, suspicious_chunks=[(0x0, 100), (0x5, 200)], embedded={'jar'})",
                          str(PolyglotLevel(is_valid=False, suspicious_chunks=[(0, 100), (5, 200)], embedded={'jar'})))

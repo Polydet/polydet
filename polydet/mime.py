@@ -27,4 +27,5 @@ def guess_extension(mime: str) -> str:
     """
     if mime in extension_map:
         return extension_map[mime]
-    return mimetypes.guess_extension(mime)[1:]
+    ext = mimetypes.guess_extension(mime)
+    return ext[1:] if ext is not None else None

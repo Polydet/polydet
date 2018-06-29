@@ -22,5 +22,5 @@ def check(filename):
 
 def check_with_matches(filename, matches):
     if 'Is7Z' in matches:
-        return PolyglotLevel.VALID
+        return PolyglotLevel()
     return None

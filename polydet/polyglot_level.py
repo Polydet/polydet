@@ -39,7 +39,7 @@ class PolyglotLevel:
 
     def __eq__(self, other):
         if not isinstance(other, PolyglotLevel):
-            raise NotImplemented()
+            return NotImplemented
         return self.is_valid == other.is_valid \
             and self.suspicious_chunks == other.suspicious_chunks \
             and self.embedded == other.embedded

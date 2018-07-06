@@ -154,7 +154,7 @@ class _MemoryMarker:
 
     def clean(self):
         """Try to reduce the number of entries in map"""
-        items = [i for i in self.map.items()]
+        items = sorted(self.map.items(), key=lambda item: item[0])
         for (offset, size) in items:
             previous_zones = [item for item in self.map.items() if item[0] < offset <= item[0] + item[1]]
             if len(previous_zones):

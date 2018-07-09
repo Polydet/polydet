@@ -1,4 +1,4 @@
-from . import bmp, gif, html, jpg, mp3, ogg, pdf, png, rar, seven_zip, swf, tar, tiff, wav, zip
+from . import bmp, gif, html, jpg, mp3, ogg, pdf, png, rar, seven_zip, swf, tar, tiff, wav, webm, zip
 
 ALL_PLUGINS = [
     bmp,
@@ -11,9 +11,10 @@ ALL_PLUGINS = [
     png,
     rar,
     seven_zip,
+    swf,
     tar,
     tiff,
     wav,
-    swf,
+    webm,
     zip
 ]

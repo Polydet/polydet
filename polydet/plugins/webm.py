@@ -4,6 +4,8 @@ import yara
 from polydet.polyglot_level import PolyglotLevel
 
 
+FILE_EXTENSION = 'webm'
+
 RULES = """
 rule IsWEBM {
   strings:

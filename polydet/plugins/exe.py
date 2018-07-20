@@ -1,9 +1,8 @@
-import io
 import os
+import pefile
 import yara
 
 from polydet import PolyglotLevel
-from polydet._parser import FileParser, LITTLE_ENDIAN
 
 FILE_EXTENSION = 'exe'
 
@@ -33,32 +32,35 @@ def check(filename):
 
 # TODO: Detect other MZ format than PE?
 # TODO: Detect big endian PE?
-# FIXME: Know why some legitimate exe trigger the SizeOfImage rule
+# TODO: Check the correctness of the CertificateTable?
+# FIXME: Fix case when PE.FILE_HEADER.SizeOfOptionalHeader is bad
 def check_with_matches(filename, matches):
     if 'IsPE' not in matches:
         return None
 
-    try:
-        level = PolyglotLevel()
+    level = PolyglotLevel()
+    file_size = os.stat(filename).st_size
+    pe = pefile.PE(filename)
 
-        with open(filename, mode='rb') as fp:
-            fp.seek(0x3C, io.SEEK_SET)
-            parser = FileParser(fp, LITTLE_ENDIAN)
-            nt_header_offset = parser.read_i32()
+    overlay_offset = pe.get_overlay_data_start_offset()
+    if overlay_offset is not None:
+        entry_id = pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_SECURITY']
+        if len(pe.OPTIONAL_HEADER.DATA_DIRECTORY) > entry_id \
+                and pe.OPTIONAL_HEADER.DATA_DIRECTORY[entry_id].VirtualAddress != 0:
+            certificate_table = pe.OPTIONAL_HEADER.DATA_DIRECTORY[entry_id]
+            certificate_table_begin = certificate_table.VirtualAddress
+            certificate_table_end = certificate_table_begin + certificate_table.Size
+        else:
+            certificate_table_begin = overlay_offset
+            certificate_table_end = certificate_table_begin
 
-            fp.seek(nt_header_offset + __PE_MAGIC_SIZE + __COFF_HEADER_SIZE, io.SEEK_SET)
-            optional_header_magic = parser.read_i16()
 
-            if optional_header_magic == __OPTIONAL_HEADER_PE32_MAGIC \
-                    or optional_header_magic == __OPTIONAL_HEADER_PE32_PLUS_MAGIC:
-                file_size = os.stat(filename).st_size
-                fp.seek(__OPTIONAL_HEADER_SIZE_OF_IMAGE_OFFSET - 2, io.SEEK_CUR)
-                size_of_image = parser.read_i32()
+        # Check if there is some data before the certificate table
+        if overlay_offset < certificate_table_begin:
+            level.add_chunk(overlay_offset, certificate_table_begin - overlay_offset)
 
-                # Check that the size_of_image correspond to the size of the EXE
-                if file_size > size_of_image:
-                    level.add_chunk(size_of_image, file_size - size_of_image)
+        # Check if there is some data after the certificate table
+        if file_size > certificate_table_end:
+            level.add_chunk(certificate_table_end, file_size - certificate_table_end)
 
-        return level
-    except ValueError:
-        return None
+    return level

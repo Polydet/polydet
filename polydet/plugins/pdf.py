@@ -24,6 +24,12 @@ rule HasEOF {
   condition:
     HasTruncatedMagic and $eof
 }
+rule IsPDF {
+  strings:
+    $root_obj = /<<.*\/Root.+>>/is // TODO Test a PDF with /rOOT
+  condition:
+    HasTruncatedMagic or $root_obj
+}
 """
 
 
@@ -34,19 +40,24 @@ def check(filename):
 
 
 def check_with_matches(filename, matches):
-    truncated_magic_offset = matches['HasTruncatedMagic'].strings[0][0] if 'HasTruncatedMagic' in matches else None
-    if truncated_magic_offset is None:
+    if 'IsPDF' not in matches:
         return None
 
-    magic_offset = matches['HasMagic'].strings[0][0] if 'HasMagic' in matches else None
+    level = PolyglotLevel()
+
+    if 'HasTruncatedMagic' in matches:
+        truncated_magic_offset = matches['HasTruncatedMagic'].strings[0][0]
+
+        magic_offset = matches['HasMagic'].strings[0][0] if 'HasMagic' in matches else None
+
+        # If the offset of the full magic is the first magic found in the file
+        if not (magic_offset == truncated_magic_offset <= 1024):
+            level.invalid()
+
+        if truncated_magic_offset > 0:
+            level.add_chunk(0, truncated_magic_offset)
+
     eof_match = matches['HasEOF'].strings[-1] if 'HasEOF' in matches else None
-
-    # If the offset of the full magic is the first magic found in the file
-    level = PolyglotLevel(is_valid=magic_offset == truncated_magic_offset <= 1024)
-
-    if truncated_magic_offset > 0:
-        level.add_chunk(0, truncated_magic_offset)
-
     file_size = os.stat(filename).st_size
 
     if eof_match is not None and eof_match[0] + len(eof_match[2]) < file_size:

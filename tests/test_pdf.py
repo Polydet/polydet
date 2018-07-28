@@ -25,3 +25,7 @@ class TestPDFDetector(TestCase):
     def test_garbage_at_end(self):
         self.assertEqual(PolyglotLevel(suspicious_chunks=[(0x2E8C, 0xB5)]),
                          pdf.check('tests/samples/pdf/garbage_at_end.pdf'))
+
+    def test_no_magic(self):
+        self.assertEqual(PolyglotLevel(),
+                         pdf.check('tests/samples/pdf/no-magic-nor-end.pdf'))

@@ -20,3 +20,8 @@ class TestWAVDetector(TestCase):
         result = wav.check('tests/samples/wav/garbage_at_end.wav')
         self.assertEqual(PolyglotLevel(suspicious_chunks=[(0x56414, 0x2E8C)]),
                          result)
+
+    def test_garbage_at_beginning_and_end(self):
+        result = wav.check('tests/samples/wav/garbage_at_beginning_and_end.wav')
+        self.assertEqual(PolyglotLevel(suspicious_chunks=[(0, 0x15), (0x56429, 0x2E8C)]),
+                         result)

@@ -29,3 +29,7 @@ class TestPDFDetector(TestCase):
     def test_no_magic(self):
         self.assertEqual(PolyglotLevel(),
                          pdf.check('tests/samples/pdf/no-magic-nor-end.pdf'))
+
+    def test_crlf(self):
+        self.assertEqual(PolyglotLevel(),
+                         pdf.check('tests/samples/pdf/18993-pdf.pdf'))

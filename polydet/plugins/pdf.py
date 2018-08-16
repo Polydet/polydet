@@ -14,13 +14,13 @@ rule HasTruncatedMagic {
 }
 rule HasMagic {
   strings:
-    $magic = /%PDF-\d.\d\\n/
+    $magic = /%PDF-\d.\d\\r?\\n/
   condition:
     $magic
 }
 rule HasEOF {
   strings:
-    $eof = /\\n%%EOF\\n?/
+    $eof = /\\n%%EOF\\r?\\n?/
   condition:
     HasTruncatedMagic and $eof
 }

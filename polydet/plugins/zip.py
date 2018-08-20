@@ -32,8 +32,8 @@ rule IsDOCX {
 }
 rule IsJAR {
   strings:
-    //                 P  K             M  E  T  A  -  I  N  F  /
-    $lfh_and_meta = { 50 4B 03 04 [26] 4D 45 54 41 2D 49 4E 46 2F }
+    //                 P  K             M  E  T  A  -  I  N  F  /  M  A  N  I  F  E  S  T  .  M  F
+    $lfh_and_meta = { 50 4B 03 04 [26] 4D 45 54 41 2D 49 4E 46 2F 4D 41 4E 49 46 45 53 54 2E 4D 46 }
     // the file name must be 30 bytes after the beginning of the LFH (or the CFD)
 
   condition:

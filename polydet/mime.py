@@ -7,6 +7,9 @@ logger.addHandler(logging.NullHandler())
 mimetypes.add_type('application/x-sharedlib', '.o', strict=True)
 mimetypes.add_type('application/x-executable', '.o', strict=True)
 mimetypes.add_type('application/x-dosexec', '.exe', strict=True)
+mimetypes.add_type('application/epub+zip', '.epub', strict=True)
+mimetypes.add_type('audio/x-flac', '.flac', strict=True)
+mimetypes.add_type('text/x-php', '.php', strict=True)
 
 # There are some duplicate in the mimetypes package, so we handle some known types.
 extension_map = {

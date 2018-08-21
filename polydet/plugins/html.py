@@ -1,4 +1,5 @@
 import mmap
+import io
 import yara
 
 from polydet.polyglot_level import PolyglotLevel
@@ -8,8 +9,8 @@ FILE_EXTENSION = 'html'
 RULES = """
 rule IsHTML {
   strings:
-    $doctype = /<!DOCTYPE html>/
-    $opening_tag = /<(html|body|script)/
+    $doctype = /<!DOCTYPE html/ nocase
+    $opening_tag = /<(html|body|script)/ nocase
 
   condition:
     $doctype or $opening_tag
@@ -25,9 +26,7 @@ def check(filename):
     return check_with_matches(filename, {m.rule: m for m in matches})
 
 
-# TODO Add acceptance for whitespace at beginning
-# TODO Check lowercase doctypes
-# TODO Check unclosed tags as '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"' or '<html onload="">'.
+# TODO Support uppercase and random case doctype and tags
 #    Can be done with ungreedy matching in yara
 # TODO Improve to use results of yara matching
 def check_with_matches(filename: str, matches):
@@ -56,8 +55,12 @@ def check_with_matches(filename: str, matches):
                     break
             if doc_start != -1:
                 level = PolyglotLevel()
-                if doc_start != 0:
+
+                buf.seek(0, io.SEEK_SET)
+                begin_content = buf.read(doc_start)  # Read until doc start
+                if not __is_whitespace(begin_content):
                     level.add_chunk(0, doc_start)
+
                 buf.seek(doc_end)
                 contents = buf.read()
                 if not __is_whitespace(contents):
@@ -68,7 +71,5 @@ def check_with_matches(filename: str, matches):
 
 
 def __is_whitespace(contents: bytes):
-    for elem in contents:
-        if elem != ord(' ') and elem != ord('\t') and elem != ord('\n'):
-            return False
-    return True
+    whitespaces = b' \t\r\n'
+    return all(b in whitespaces for b in contents)

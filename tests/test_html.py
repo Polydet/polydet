@@ -61,3 +61,7 @@ class TestHTMLDetector(TestCase):
         result = html.check('tests/samples/html/garbage_end_4.html')
         self.assertEqual(PolyglotLevel(suspicious_chunks=[(0x6, 0x12)]),
                          result)
+
+    def test_whitespace_beginning(self):
+        result = html.check('tests/samples/html/whitespace_beginning.html')
+        self.assertEqual(PolyglotLevel(), result)

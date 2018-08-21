@@ -1,6 +1,8 @@
 class PolyglotLevel:
 
-    def __init__(self, is_valid = True, suspicious_chunks: [(int, int)] = None, embedded: set = None):
+    __slots__ = ['is_valid', 'suspicious_chunks', 'embedded']
+
+    def __init__(self, is_valid=True, suspicious_chunks: [(int, int)] = None, embedded: set = None):
         self.is_valid = is_valid
         self.suspicious_chunks = suspicious_chunks if suspicious_chunks is not None else []
         self.embedded = embedded if embedded is not None else set()

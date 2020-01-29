@@ -17,6 +17,7 @@ extension_map = {
     'application/vnd.ms-excel': 'xls',
     'application/vnd.ms-powerpoint': 'ppt',
     'application/x-python-code': 'pyc',
+    'audio/ogg': 'ogg',
     'image/jpeg': 'jpg',
     'image/tiff': 'tiff',
     'video/mpeg': 'mpeg',

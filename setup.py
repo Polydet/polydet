@@ -8,4 +8,4 @@ setup(name='polydet',
       url='https://git.cs.kent.ac.uk/hljl2/polyglot-detector',
       packages=find_packages(exclude=['tests']),
       zip_safe=True,
-      install_requires=['pefile', 'file-magic', 'yara-python'])
+      install_requires=['pefile', 'file-magic', 'yara-python<4', 'pillow'])

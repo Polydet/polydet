@@ -1,4 +1,4 @@
 file-magic==0.4.1
 pefile==2023.2.7
-Pillow==10.2.0
+Pillow==10.3.0
 yara-python==3.11.0
